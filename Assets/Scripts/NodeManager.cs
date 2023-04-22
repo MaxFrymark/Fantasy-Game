@@ -104,6 +104,11 @@ public class NodeManager : MonoBehaviour
         return GetTileNode(coordinates);
     }
 
+    public TileNode GetTileNode(int x, int y)
+    {
+        return GetTileNode(new Vector3Int(x, y, 0));
+    }
+
     public Tilemap GetTilemap()
     {
         return tileMap;
@@ -112,6 +117,7 @@ public class NodeManager : MonoBehaviour
 
 public class TileNode
 {
+    public NodePathFindingData pathFindingData;
     NodeManager nodeManager;
     Vector3Int coordinates;
     MapCreator.TerrainType terrainType;
@@ -119,15 +125,19 @@ public class TileNode
     int forestLevel = 0;
     Region region;
 
+    
+
     public TileNode(NodeManager nodeManager, Vector3Int coordinates, MapCreator.TerrainType terrainType)
     {
-
+        pathFindingData = new NodePathFindingData();
         this.nodeManager = nodeManager;
         this.coordinates = coordinates;
         this.terrainType = terrainType;
         neighbors = new TileNode[6];
         FindAllNeighbors();
     }
+
+    
 
     public Vector3Int GetCoordinates()
     {
@@ -348,5 +358,18 @@ public class TileNode
     public bool IsNodeOcean()
     {
         return terrainType == MapCreator.TerrainType.ocean;
+    }
+}
+
+public class NodePathFindingData
+{
+    public TileNode cameFromNode;
+    public int gCost;
+    public int hCost;
+    public int fCost;
+
+    public void CalculateFCost()
+    {
+        fCost = gCost + hCost;
     }
 }

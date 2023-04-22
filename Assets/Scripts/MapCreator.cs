@@ -27,9 +27,11 @@ public class MapCreator : MonoBehaviour
         DrawContinent();
         EliminateIslands();
         DrawMountains();
+        DrawRivers();
         DrawForest();
         CreateRegions();
         DrawBorders();
+        
     }
 
     private void IterateThroughAllTiles(OperateOnTile operateOnTile, float[,] noiseMap, float[] terrainThreshholds)
@@ -40,6 +42,51 @@ public class MapCreator : MonoBehaviour
             {
                 operateOnTile(x, y, noiseMap, terrainThreshholds);
             }
+        }
+    }
+
+    private List<NoiseWave> GenerateNoiseWaves(int noiseLayers, float frequencyMin, float frequencyMax)
+    {
+        List<NoiseWave> noiseWaves = new List<NoiseWave>();
+        for (int i = 0; i < noiseLayers; i++)
+        {
+            float frequency = Random.Range(frequencyMin, frequencyMax);
+            NoiseWave wave = new NoiseWave(Random.Range(0, 500), frequency, (float)i / noiseLayers);
+            noiseWaves.Add(wave);
+        }
+
+        return noiseWaves;
+    }
+
+    private float[,] GenerateNoiseMap(List<NoiseWave> waves)
+    {
+        float[,] noiseMap = new float[mapWidth * 2 + 1, mapHeight * 2 + 1];
+        for (int x = 0; x <= mapWidth * 2; x++)
+        {
+            for (int y = 0; y <= mapHeight * 2; y++)
+            {
+                float normalization = 0f;
+                foreach (NoiseWave wave in waves)
+                {
+                    noiseMap[x, y] += wave.amplitude * Mathf.PerlinNoise(x * wave.frequency + wave.seed, y * wave.frequency + wave.seed);
+                    normalization += wave.amplitude;
+                }
+                noiseMap[x, y] /= normalization;
+            }
+        }
+
+        return noiseMap;
+    }
+
+    private float GetPositionModifier(Vector3Int tilePos)
+    {
+        if (Mathf.Abs(tilePos.x) > Mathf.Abs(tilePos.y))
+        {
+            return Mathf.Pow(tilePos.x, 2) / (float)Mathf.Pow(mapWidth, 2);
+        }
+        else
+        {
+            return Mathf.Pow(tilePos.y, 2) / (float)Mathf.Pow(mapHeight, 2);
         }
     }
 
@@ -82,7 +129,7 @@ public class MapCreator : MonoBehaviour
                 
                 if (node.GetTerrainType() == TerrainType.plains)
                 {
-                    islands.Add(BuildIsland(checkedTiles, node));
+                    islands.Add(BuildGroupOfMatchingTiles(checkedTiles, node, TerrainType.plains));
                 }
 
                 else
@@ -123,12 +170,12 @@ public class MapCreator : MonoBehaviour
         }
     }
 
-    private List<TileNode> BuildIsland(List<TileNode> checkedTiles, TileNode startingNode)
+    private List<TileNode> BuildGroupOfMatchingTiles(List<TileNode> checkedTiles, TileNode startingNode, TerrainType terrain)
     {
-        List<TileNode> island = new List<TileNode>();
+        List<TileNode> tileGroup = new List<TileNode>();
 
         checkedTiles.Add(startingNode);
-        island.Add(startingNode);
+        tileGroup.Add(startingNode);
 
         foreach(TileNode node in startingNode.GetNeighbors())
         {
@@ -137,18 +184,18 @@ public class MapCreator : MonoBehaviour
                 continue;
             }
 
-            if (node.GetTerrainType() == TerrainType.ocean)
+            if (node.GetTerrainType() != terrain)
             {
                 continue;
             }
 
-            foreach(TileNode tileNode in BuildIsland(checkedTiles, node))
+            foreach(TileNode tileNode in BuildGroupOfMatchingTiles(checkedTiles, node, terrain))
             {
-                island.Add(tileNode);
+                tileGroup.Add(tileNode);
             }
         }
 
-        return island;
+        return tileGroup;
     }
 
     private void DrawMountains()
@@ -215,51 +262,84 @@ public class MapCreator : MonoBehaviour
         nodeManager.PlaceNode(tileNode.GetCoordinates(), terrainType);
     }
 
-    private List<NoiseWave> GenerateNoiseWaves(int noiseLayers, float frequencyMin, float frequencyMax)
+    private void DrawRivers()
     {
-        List<NoiseWave> noiseWaves = new List<NoiseWave>();
-        for(int i = 0; i < noiseLayers; i++)
-        {
-            float frequency = Random.Range(frequencyMin, frequencyMax);
-            NoiseWave wave = new NoiseWave(Random.Range(0, 500), frequency, (float)i / noiseLayers);
-            noiseWaves.Add(wave);
-        }
-
-        return noiseWaves;
+        List<TileNode> ocean = FindOcean();
+        List<List<TileNode>> mountainRanges = FindMountainRanges();
     }
 
-    private float[,] GenerateNoiseMap(List<NoiseWave> waves)
+    private List<TileNode> FindOcean()
     {
-        float[,] noiseMap = new float[mapWidth * 2 + 1, mapHeight * 2 + 1];
-        for(int x = 0; x <= mapWidth * 2; x++)
+        List<TileNode> checkedTiles = new List<TileNode>();
+        List<List<TileNode>> seas = new List<List<TileNode>>();
+
+        for (int x = -mapWidth; x <= mapWidth; x++)
         {
-            for(int y = 0; y <= mapHeight * 2; y++)
+            for (int y = -mapHeight; y <= mapHeight; y++)
             {
-                float normalization = 0f;
-                foreach(NoiseWave wave in waves)
+                TileNode node = nodeManager.GetTileNode(new Vector3Int(x, y));
+
+                if (checkedTiles.Contains(node))
                 {
-                    noiseMap[x, y] += wave.amplitude * Mathf.PerlinNoise(x * wave.frequency + wave.seed, y * wave.frequency + wave.seed);
-                    normalization += wave.amplitude;
+                    continue;
                 }
-                noiseMap[x, y] /= normalization;
+
+
+                if (node.GetTerrainType() == TerrainType.plains)
+                {
+                    seas.Add(BuildGroupOfMatchingTiles(checkedTiles, node, TerrainType.ocean));
+                }
+
+                else
+                {
+                    checkedTiles.Add(node);
+                }
             }
         }
 
-        return noiseMap;
+        List<TileNode> largestSea = seas[0];
+        foreach(List<TileNode> sea in seas)
+        {
+            if(sea.Count > largestSea.Count)
+            {
+                largestSea = sea;
+            }
+        }
+        return largestSea;
     }
 
-    private float GetPositionModifier(Vector3Int tilePos)
+    private List<List<TileNode>> FindMountainRanges()
     {
-        if(Mathf.Abs(tilePos.x) > Mathf.Abs(tilePos.y))
+        List<TileNode> checkedTiles = new List<TileNode>();
+        List<List<TileNode>> mountainRanges = new List<List<TileNode>>();
+
+        for (int x = -mapWidth; x <= mapWidth; x++)
         {
-            return Mathf.Pow(tilePos.x, 2) / (float)Mathf.Pow(mapWidth, 2);
+            for (int y = -mapHeight; y <= mapHeight; y++)
+            {
+                TileNode node = nodeManager.GetTileNode(new Vector3Int(x, y));
+
+                if (checkedTiles.Contains(node))
+                {
+                    continue;
+                }
+
+
+                if (node.GetTerrainType() == TerrainType.plains)
+                {
+                    mountainRanges.Add(BuildGroupOfMatchingTiles(checkedTiles, node, TerrainType.mountain));
+                }
+
+                else
+                {
+                    checkedTiles.Add(node);
+                }
+            }
         }
-        else
-        {
-            return Mathf.Pow(tilePos.y, 2) / (float)Mathf.Pow(mapHeight, 2);
-        }
+        
+        return mountainRanges;
     }
-    
+
     private void PlaceTileCoordinateLabel(Vector3Int coordinate)
     {
         TextMeshPro label = Instantiate(tileCoordinateLabel, nodeManager.GetTilemap().GetCellCenterWorld(coordinate), Quaternion.identity);
