@@ -11,6 +11,8 @@ public class MapCreator : MonoBehaviour
     [SerializeField] RegionManager regionManager;
 
     [SerializeField] TextMeshPro tileCoordinateLabel;
+
+   [SerializeField] RiverNode riverNode;
     bool labelsPlaced = false;
 
 
@@ -41,8 +43,13 @@ public class MapCreator : MonoBehaviour
             for(int y = - mapHeight; y <= mapHeight; y++)
             {
                 operateOnTile(x, y, noiseMap, terrainThreshholds);
+                if (!labelsPlaced)
+                {
+                    //PlaceTileCoordinateLabel(new Vector3Int(x, y, 0));
+                }
             }
         }
+        labelsPlaced = true;
     }
 
     private List<NoiseWave> GenerateNoiseWaves(int noiseLayers, float frequencyMin, float frequencyMax)
@@ -129,7 +136,7 @@ public class MapCreator : MonoBehaviour
                 
                 if (node.GetTerrainType() == TerrainType.plains)
                 {
-                    islands.Add(BuildGroupOfMatchingTiles(checkedTiles, node, TerrainType.plains));
+                    islands.Add(BuildGroupOfMatchingTiles(checkedTiles, node, false));
                 }
 
                 else
@@ -170,8 +177,10 @@ public class MapCreator : MonoBehaviour
         }
     }
 
-    private List<TileNode> BuildGroupOfMatchingTiles(List<TileNode> checkedTiles, TileNode startingNode, TerrainType terrain)
+    private List<TileNode> BuildGroupOfMatchingTiles(List<TileNode> checkedTiles, TileNode startingNode, bool debugging)
     {
+        
+
         List<TileNode> tileGroup = new List<TileNode>();
 
         checkedTiles.Add(startingNode);
@@ -179,21 +188,30 @@ public class MapCreator : MonoBehaviour
 
         foreach(TileNode node in startingNode.GetNeighbors())
         {
+            if(node == null)
+            {
+                continue;
+            }
+            
             if (checkedTiles.Contains(node))
             {
                 continue;
             }
 
-            if (node.GetTerrainType() != terrain)
+            if (node.GetTerrainType() != startingNode.GetTerrainType())
             {
                 continue;
             }
 
-            foreach(TileNode tileNode in BuildGroupOfMatchingTiles(checkedTiles, node, terrain))
+            foreach(TileNode tileNode in BuildGroupOfMatchingTiles(checkedTiles, node, false))
             {
+
+                
                 tileGroup.Add(tileNode);
             }
         }
+        
+
 
         return tileGroup;
     }
@@ -266,6 +284,15 @@ public class MapCreator : MonoBehaviour
     {
         List<TileNode> ocean = FindOcean();
         List<List<TileNode>> mountainRanges = FindMountainRanges();
+        foreach(List<TileNode> mountainRange in mountainRanges)
+        {
+            List<TileNode> river = DrawRiverFromMountain(mountainRange, ocean);
+            
+            if (river != null)
+            {
+                PlaceRiverTiles(river);
+            }
+        }
     }
 
     private List<TileNode> FindOcean()
@@ -285,9 +312,9 @@ public class MapCreator : MonoBehaviour
                 }
 
 
-                if (node.GetTerrainType() == TerrainType.plains)
+                if (node.IsNodeOcean())
                 {
-                    seas.Add(BuildGroupOfMatchingTiles(checkedTiles, node, TerrainType.ocean));
+                    seas.Add(BuildGroupOfMatchingTiles(checkedTiles, node, true));
                 }
 
                 else
@@ -325,9 +352,9 @@ public class MapCreator : MonoBehaviour
                 }
 
 
-                if (node.GetTerrainType() == TerrainType.plains)
+                if (node.GetTerrainType() == TerrainType.mountain)
                 {
-                    mountainRanges.Add(BuildGroupOfMatchingTiles(checkedTiles, node, TerrainType.mountain));
+                    mountainRanges.Add(BuildGroupOfMatchingTiles(checkedTiles, node, false));
                 }
 
                 else
@@ -338,6 +365,75 @@ public class MapCreator : MonoBehaviour
         }
         
         return mountainRanges;
+    }
+
+    private List<TileNode> DrawRiverFromMountain(List<TileNode> mountainRange, List<TileNode> ocean)
+    {
+        Vector3 center = FindCenterOfMountainRange(mountainRange);
+        TileNode closestOceanTile = FindClosestTile(ocean, center);
+
+        TileNode destinationTile = null;
+        foreach(TileNode neighbor in closestOceanTile.GetNeighbors())
+        {
+            if (!neighbor.IsNodeOcean())
+            {
+                destinationTile = neighbor;
+                break;
+            }
+        }
+
+        if(destinationTile == null)
+        {
+            Debug.LogError("DrawRiverFromMountain Returned an ocean tile that doesn't border land");
+        }
+
+        
+
+        TileNode startingTile = FindClosestTile(mountainRange, destinationTile.GetCoordinates());
+
+        if(startingTile == destinationTile)
+        {
+            Debug.Log("Mountain on Coast");
+            return null;
+        }
+        
+        return Pathfinding.Singleton.FindPath(startingTile.GetCoordinates(), destinationTile.GetCoordinates());
+    }
+
+    private Vector3 FindCenterOfMountainRange(List<TileNode> mountainRange)
+    {
+        Vector3 center = Vector3.zero;
+        foreach(TileNode node in mountainRange)
+        {
+            center += node.GetCoordinates();
+        }
+        center = new Vector3(center.x / mountainRange.Count, center.y / mountainRange.Count, 0);
+        return center;
+    }
+
+    private TileNode FindClosestTile(List<TileNode> tileNodes, Vector3 origin)
+    {
+        float distanceToTile = 10000;
+        TileNode closestTile = null;
+        foreach (TileNode node in tileNodes)
+        {
+            float distance = Vector3.Distance(origin, node.GetCoordinates());
+            if (distance < distanceToTile)
+            {
+                closestTile = node;
+                distanceToTile = distance;
+            }
+        }
+
+        return closestTile;
+    }
+
+    private void PlaceRiverTiles(List<TileNode> river)
+    {
+        for(int i = 0; i < river.Count; i++)
+        {
+            Instantiate(riverNode.gameObject, nodeManager.GetWorldPostitionFromTileNode(river[i]), Quaternion.identity);
+        }
     }
 
     private void PlaceTileCoordinateLabel(Vector3Int coordinate)

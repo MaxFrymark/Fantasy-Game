@@ -113,6 +113,11 @@ public class NodeManager : MonoBehaviour
     {
         return tileMap;
     }
+
+    public Vector3 GetWorldPostitionFromTileNode(TileNode node)
+    {
+        return tileMap.GetCellCenterWorld(node.GetCoordinates());
+    }
 }
 
 public class TileNode

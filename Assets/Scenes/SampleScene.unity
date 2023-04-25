@@ -1025,6 +1025,7 @@ MonoBehaviour:
   nodeManager: {fileID: 454916005}
   regionManager: {fileID: 793899495}
   tileCoordinateLabel: {fileID: 5856313347435436696, guid: 6bac34a319bac4b4aa8347a536485299, type: 3}
+  riverNode: {fileID: 1352947114678279023, guid: 3f59c5df38a0b5a499beba3970e18db2, type: 3}
 --- !u!4 &1277696883
 Transform:
   m_ObjectHideFlags: 0

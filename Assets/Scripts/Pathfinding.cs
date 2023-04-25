@@ -31,7 +31,8 @@ public class Pathfinding
 
     public List<TileNode> FindPath(Vector3Int origin, Vector3Int destination)
     {
-        if(grid == null)
+        
+        if (grid == null)
         {
             grid = NodeManager.Instance;
         }
@@ -62,6 +63,7 @@ public class Pathfinding
             TileNode currentNode = GetLowestFCostNode(openList);
             if(currentNode == endNode)
             {
+                Debug.Log("hi");
                 return CalculatePath(endNode);     
             }
             openList.Remove(currentNode);
@@ -75,12 +77,11 @@ public class Pathfinding
                     closedList.Add(adjacentNode);
                     continue;
                 }
-                adjacentNode.pathFindingData.gCost += CalculateTerrainModifier(adjacentNode);
                 int tentativeGCost = currentNode.pathFindingData.gCost + CalculateDistanceCost(currentNode, adjacentNode);
                 if(tentativeGCost < adjacentNode.pathFindingData.gCost)
                 {
                     adjacentNode.pathFindingData.cameFromNode = currentNode;
-                    adjacentNode.pathFindingData.gCost = tentativeGCost;
+                    adjacentNode.pathFindingData.gCost = tentativeGCost + CalculateTerrainModifier(adjacentNode);
                     adjacentNode.pathFindingData.hCost = CalculateDistanceCost(adjacentNode, endNode);
                     adjacentNode.pathFindingData.CalculateFCost();
 

@@ -204,7 +204,6 @@ public class RegionManager : MonoBehaviour
                 }
             }
         }
-        Debug.Log(newRegions.Count);
         foreach(Region region in newRegions)
         {
             regions.Add(region);
