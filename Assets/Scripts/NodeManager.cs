@@ -127,6 +127,7 @@ public class TileNode
     Vector3Int coordinates;
     MapCreator.TerrainType terrainType;
     TileNode[] neighbors;
+    RiverNode[] riverBorders;
     int forestLevel = 0;
     Region region;
 
@@ -139,6 +140,7 @@ public class TileNode
         this.coordinates = coordinates;
         this.terrainType = terrainType;
         neighbors = new TileNode[6];
+        riverBorders = new RiverNode[6];
         FindAllNeighbors();
     }
 
@@ -363,6 +365,30 @@ public class TileNode
     public bool IsNodeOcean()
     {
         return terrainType == MapCreator.TerrainType.ocean;
+    }
+
+    public int GetClockwiseNeighbor(int startPoint)
+    {
+        if(startPoint == 5)
+        {
+            return 0;
+        }
+        else
+        {
+            return startPoint++;
+        }
+    }
+
+    public int GetCounterClockwiseNeighbor(int startPoint)
+    {
+        if(startPoint == 0)
+        {
+            return 5;
+        }
+        else
+        {
+            return startPoint--;
+        }
     }
 }
 

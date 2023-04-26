@@ -290,7 +290,11 @@ public class MapCreator : MonoBehaviour
             
             if (river != null)
             {
-                PlaceRiverTiles(river);
+                List<RiverNode> riverNodes = new List<RiverNode>();
+                foreach(RiverNode node in riverNodes)
+                {
+                    node.SelectVisibleRiverSegments(riverNodes);
+                }
             }
         }
     }
@@ -428,12 +432,16 @@ public class MapCreator : MonoBehaviour
         return closestTile;
     }
 
-    private void PlaceRiverTiles(List<TileNode> river)
+    private List<RiverNode> PlaceRiverTiles(List<TileNode> river)
     {
+        List<RiverNode> riverNodes = new List<RiverNode>();
         for(int i = 0; i < river.Count; i++)
         {
-            Instantiate(riverNode.gameObject, nodeManager.GetWorldPostitionFromTileNode(river[i]), Quaternion.identity);
+            GameObject riverTile = Instantiate(riverNode.gameObject, nodeManager.GetWorldPostitionFromTileNode(river[i]), Quaternion.identity);
+            RiverNode node = riverTile.GetComponent<RiverNode>();
+            riverNodes.Add(node);
         }
+        return riverNodes;
     }
 
     private void PlaceTileCoordinateLabel(Vector3Int coordinate)
