@@ -26,11 +26,16 @@ public class MapCreator : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("Drawing Continent");
         DrawContinent();
         EliminateIslands();
+        Debug.Log("Drawing Mountains");
         DrawMountains();
+        Debug.Log("Drawing Rivers");
         DrawRivers();
+        Debug.Log("Drawing Forests");
         DrawForest();
+        Debug.Log("Creating Regions");
         CreateRegions();
         DrawBorders();
         
@@ -45,7 +50,7 @@ public class MapCreator : MonoBehaviour
                 operateOnTile(x, y, noiseMap, terrainThreshholds);
                 if (!labelsPlaced)
                 {
-                    //PlaceTileCoordinateLabel(new Vector3Int(x, y, 0));
+                    PlaceTileCoordinateLabel(new Vector3Int(x, y, 0));
                 }
             }
         }
@@ -286,11 +291,13 @@ public class MapCreator : MonoBehaviour
         List<List<TileNode>> mountainRanges = FindMountainRanges();
         foreach(List<TileNode> mountainRange in mountainRanges)
         {
+
             List<TileNode> river = DrawRiverFromMountain(mountainRange, ocean);
             
-            if (river != null)
+            if (river != null && river.Count > 1)
             {
-                List<RiverNode> riverNodes = new List<RiverNode>();
+
+                List<RiverNode> riverNodes = PlaceRiverTiles(river);
                 foreach(RiverNode node in riverNodes)
                 {
                     node.SelectVisibleRiverSegments(riverNodes);
@@ -397,7 +404,6 @@ public class MapCreator : MonoBehaviour
 
         if(startingTile == destinationTile)
         {
-            Debug.Log("Mountain on Coast");
             return null;
         }
         

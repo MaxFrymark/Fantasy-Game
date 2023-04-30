@@ -51,12 +51,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   riverSprites:
-  - {fileID: 4534512386324240250}
   - {fileID: 4278095313941288667}
   - {fileID: 5362286049952372782}
   - {fileID: 2808257607414992652}
   - {fileID: 6163543289363776110}
-  - {fileID: 7016947856440941979}
+  - {fileID: 6163543289363776110}
+  - {fileID: 4534512386324240250}
 --- !u!1 &2673763704997005912
 GameObject:
   m_ObjectHideFlags: 0

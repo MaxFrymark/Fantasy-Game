@@ -171,6 +171,16 @@ public class TileNode
         return forestLevel;
     }
 
+    public RiverNode[] GetRiverBorders()
+    {
+        return riverBorders;
+    }
+
+    public void AssignRiverToRiverBorder(RiverNode node, int index)
+    {
+        riverBorders[index] = node;
+    }
+
     public void ChangeForestLevel(int forrestAdjustment)
     {
         forestLevel += forrestAdjustment;
@@ -369,26 +379,67 @@ public class TileNode
 
     public int GetClockwiseNeighbor(int startPoint)
     {
+        //Debug.Log("StartPoint: " + startPoint);
         if(startPoint == 5)
         {
-            return 0;
+            startPoint = 0;
         }
         else
         {
-            return startPoint++;
+            startPoint++;
         }
+        //Debug.Log("Clockwise StartPoint: " + startPoint);
+
+        return startPoint;
     }
 
     public int GetCounterClockwiseNeighbor(int startPoint)
     {
-        if(startPoint == 0)
+        //Debug.Log("StartPoint: " + startPoint);
+
+        if (startPoint == 0)
         {
-            return 5;
+            startPoint = 5;
         }
         else
         {
-            return startPoint--;
+            startPoint--;
         }
+
+        //Debug.Log("Counter Clockwise StartPoint: " + startPoint);
+
+        return startPoint;
+    }
+
+    public int GetOppositeSide(int startPoint)
+    {
+        int oppositeSide = 0;
+        switch (startPoint)
+        {
+            case 0:
+                oppositeSide = 3;
+                break;
+            case 1:
+                oppositeSide = 4;
+                break;
+            case 2: 
+                oppositeSide = 5;
+                break;
+            case 3:
+                oppositeSide = 0;
+                break;
+            case 4:
+                oppositeSide = 1;
+                break;
+            case 5:
+                oppositeSide = 2;
+                break;
+            default:
+                Debug.LogWarning("ERROR: TileNode.GetOppositeSide invalid startPoint " + startPoint);
+                break;
+        }
+
+        return oppositeSide;
     }
 }
 

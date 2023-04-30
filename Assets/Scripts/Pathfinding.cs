@@ -63,7 +63,6 @@ public class Pathfinding
             TileNode currentNode = GetLowestFCostNode(openList);
             if(currentNode == endNode)
             {
-                Debug.Log("hi");
                 return CalculatePath(endNode);     
             }
             openList.Remove(currentNode);
