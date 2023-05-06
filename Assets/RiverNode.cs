@@ -22,12 +22,15 @@ public class RiverNode : MonoBehaviour
 
     public void SelectVisibleRiverSegments(List<RiverNode> river)
     {
+        Debug.Log("Start River Node");
         this.river = river;
         thisNode = NodeManager.Instance.GetTileNode(transform.position);
+        Debug.Log("Coordinates: " + thisNode.GetCoordinates());
         int index = FindThisNodesIndex();
-        Debug.Log("Index: " + index);
-        Debug.Log("This Node: " + thisNode.GetCoordinates());
+        //Debug.Log("Index: " + index);
+        //Debug.Log("This Node: " + thisNode.GetCoordinates());
         FindPreviousNode(index);
+        Debug.Log("Previous Node Border Index: " + previousNodeBorderIndex);
         FindNextNode(index);
         ChooseRiverDirection();
 
@@ -43,8 +46,13 @@ public class RiverNode : MonoBehaviour
         {
             iterateRiver = thisNode.GetCounterClockwiseNeighbor;
         }
-        Debug.Log("Ta-Da!");
+        //Debug.Log("Ta-Da!");
+        Debug.Log("Start Point: " + riverStartIndex);
+        Debug.Log("End Point: " + riverEndIndex);
+        Debug.Log("IsClockwise: " + riverRunsClockwise);
+
         PlaceRiver(iterateRiver, riverStartIndex);
+        Debug.Log("End River Node");
     }
 
     private int FindThisNodesIndex()
@@ -81,7 +89,7 @@ public class RiverNode : MonoBehaviour
             previousNode = NodeManager.Instance.GetTileNode(river[index - 1].transform.position);
         }
 
-        Debug.Log("Previous Node: " + previousNode.GetCoordinates());
+        //Debug.Log("Previous Node: " + previousNode.GetCoordinates());
 
         previousNodeBorderIndex = FindBorderIndex(previousNode);
     }
@@ -90,7 +98,7 @@ public class RiverNode : MonoBehaviour
     {
         if (index == river.Count - 1)
         {
-            //Debug.Log("hi");
+            //Debug.Log("This Tile Is Last Tile");
             foreach (TileNode node in thisNode.GetNeighbors())
             {
                 if (node.GetTerrainType() == MapCreator.TerrainType.ocean)
@@ -106,7 +114,7 @@ public class RiverNode : MonoBehaviour
             //Debug.Log("meow");
             nextNode = NodeManager.Instance.GetTileNode(river[index + 1].transform.position);
         }
-        Debug.Log("Next Node: " + nextNode.GetCoordinates());
+        //Debug.Log("Next Node: " + nextNode.GetCoordinates());
 
 
         nextNodeBorderIndex = FindBorderIndex(nextNode);
@@ -118,11 +126,11 @@ public class RiverNode : MonoBehaviour
         int borderIndex = 7;
         for(int i = 0; i < nodeNeighbors.Length; i++)
         {
-            Debug.Log("Neighbor Coords: " + nodeNeighbors[i].GetCoordinates());
+            //Debug.Log("Neighbor Coords: " + nodeNeighbors[i].GetCoordinates());
             if (nodeNeighbors[i] == thisNode)
             {
                 borderIndex = thisNode.GetOppositeSide(i);
-                Debug.Log("Boder Index: " + borderIndex);
+                //Debug.Log("Boder Index: " + borderIndex);
             }
         }
 
@@ -136,26 +144,39 @@ public class RiverNode : MonoBehaviour
 
     private void ChooseRiverDirection()
     {
-        int clockWiseDistance = 0;
-        int counterClockWiseDistance = 0;
+        if (thisNode.GetClockwiseNeighbor(previousNodeBorderIndex) == nextNodeBorderIndex)
+        {
+            riverRunsClockwise = false;
+        }
 
-        clockWiseDistance = ShiftRiver(thisNode.GetClockwiseNeighbor, previousNodeBorderIndex, nextNodeBorderIndex, 0);
-        counterClockWiseDistance = ShiftRiver(thisNode.GetCounterClockwiseNeighbor, previousNodeBorderIndex, nextNodeBorderIndex, 0);
+        else if (thisNode.GetCounterClockwiseNeighbor(previousNodeBorderIndex) == nextNodeBorderIndex)
+        {
+            riverRunsClockwise = true;
+        }
 
-        riverRunsClockwise = clockWiseDistance < counterClockWiseDistance;
+        else
+        {
+            int clockWiseDistance = 0;
+            int counterClockWiseDistance = 0;
+
+            clockWiseDistance = ShiftRiver(thisNode.GetClockwiseNeighbor, previousNodeBorderIndex, nextNodeBorderIndex, 0);
+            counterClockWiseDistance = ShiftRiver(thisNode.GetCounterClockwiseNeighbor, previousNodeBorderIndex, nextNodeBorderIndex, 0);
+
+            riverRunsClockwise = clockWiseDistance < counterClockWiseDistance;
+        }
     }
 
     private int ShiftRiver(IterateRiver iterateRiver,int index, int target, int i)
     {
-        Debug.Log("Starting Index:" + index + " " + target);
+        //Debug.Log("Starting Index:" + index + " " + target);
 
         index = iterateRiver(index);
-        Debug.Log("New Index: " + index);
+        //Debug.Log("New Index: " + index);
         i++;
-        Debug.Log("Number of Iterations: " + i);
+        //Debug.Log("Number of Iterations: " + i);
         if(index == target)
         {
-            Debug.Log("Hi");
+            //Debug.Log("Hi");
             return i;
         }
         else
@@ -172,6 +193,18 @@ public class RiverNode : MonoBehaviour
         if (river.Contains(riverNodes[index]))
         {
             Debug.Log("River borders connect");
+        }
+        else if (previousNode.GetTerrainType() == MapCreator.TerrainType.mountain)
+        {
+            validBorderRiverNode = true;
+            if (riverRunsClockwise)
+            {
+                riverStartIndex = thisNode.GetClockwiseNeighbor(previousNodeBorderIndex);
+            }
+            else
+            {
+                riverStartIndex = thisNode.GetCounterClockwiseNeighbor(previousNodeBorderIndex);
+            }
         }
         else if (river.Contains(riverNodes[previousNode.GetClockwiseNeighbor(index)]))
         {
@@ -200,14 +233,15 @@ public class RiverNode : MonoBehaviour
 
         if (!validBorderRiverNode)
         {
-            if(Random.value > 0.5f)
+            Debug.LogError("No Valid River Border");
+            /*if(Random.value > 0.5f)
             {
                 riverStartIndex = thisNode.GetCounterClockwiseNeighbor(previousNodeBorderIndex);
             }
             else
             {
                 riverStartIndex = thisNode.GetClockwiseNeighbor(previousNodeBorderIndex);
-            }
+            }*/
         }
 
     }
@@ -231,7 +265,7 @@ public class RiverNode : MonoBehaviour
         thisNode.GetNeighbors()[currentIndex].AssignRiverToRiverBorder(this, thisNode.GetOppositeSide(currentIndex));
         if(currentIndex != riverEndIndex)
         {
-            iterateRiver(currentIndex);
+            currentIndex = iterateRiver(currentIndex);
             PlaceRiver(iterateRiver, currentIndex);
         }
     }

@@ -12,7 +12,9 @@ public class MapCreator : MonoBehaviour
 
     [SerializeField] TextMeshPro tileCoordinateLabel;
 
-   [SerializeField] RiverNode riverNode;
+    [SerializeField] RiverNode riverNode;
+
+    [SerializeField] Transform labelParent;
     bool labelsPlaced = false;
 
 
@@ -293,15 +295,19 @@ public class MapCreator : MonoBehaviour
         {
 
             List<TileNode> river = DrawRiverFromMountain(mountainRange, ocean);
-            
-            if (river != null && river.Count > 1)
-            {
 
-                List<RiverNode> riverNodes = PlaceRiverTiles(river);
+            
+            if (river != null && river.Count > 2)
+            {
+                Debug.Log("Start River");
+                GameObject riverParent = Instantiate(new GameObject(), Vector3.zero, Quaternion.identity);
+                riverParent.name = "River";
+                List<RiverNode> riverNodes = PlaceRiverTiles(river, riverParent.transform);
                 foreach(RiverNode node in riverNodes)
                 {
                     node.SelectVisibleRiverSegments(riverNodes);
                 }
+                Debug.Log("End River");
             }
         }
     }
@@ -438,12 +444,12 @@ public class MapCreator : MonoBehaviour
         return closestTile;
     }
 
-    private List<RiverNode> PlaceRiverTiles(List<TileNode> river)
+    private List<RiverNode> PlaceRiverTiles(List<TileNode> river, Transform parent)
     {
         List<RiverNode> riverNodes = new List<RiverNode>();
         for(int i = 0; i < river.Count; i++)
         {
-            GameObject riverTile = Instantiate(riverNode.gameObject, nodeManager.GetWorldPostitionFromTileNode(river[i]), Quaternion.identity);
+            GameObject riverTile = Instantiate(riverNode.gameObject, nodeManager.GetWorldPostitionFromTileNode(river[i]), Quaternion.identity, parent);
             RiverNode node = riverTile.GetComponent<RiverNode>();
             riverNodes.Add(node);
         }
@@ -452,9 +458,8 @@ public class MapCreator : MonoBehaviour
 
     private void PlaceTileCoordinateLabel(Vector3Int coordinate)
     {
-        TextMeshPro label = Instantiate(tileCoordinateLabel, nodeManager.GetTilemap().GetCellCenterWorld(coordinate), Quaternion.identity);
+        TextMeshPro label = Instantiate(tileCoordinateLabel, nodeManager.GetTilemap().GetCellCenterWorld(coordinate), Quaternion.identity, labelParent);
         label.text = ((Vector2Int)coordinate).ToString();
-
     }
 
     private void CreateRegions()
