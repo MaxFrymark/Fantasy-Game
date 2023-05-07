@@ -732,6 +732,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   regionBorders: {fileID: 418705678}
   borderTile: {fileID: 11400000, guid: c5ece68d01dd5824dace6809591f4052, type: 2}
+  city: {fileID: 5835391429290173916, guid: fbbd1153eca39574490c218cf1551dff, type: 3}
+  village: {fileID: 190390893392148126, guid: e371b91c2e5058c47a15404f88828a00, type: 3}
 --- !u!1 &899812951
 GameObject:
   m_ObjectHideFlags: 0

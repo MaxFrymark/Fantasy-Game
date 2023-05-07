@@ -8,10 +8,15 @@ public class RegionManager : MonoBehaviour
     [SerializeField] Tilemap regionBorders;
     [SerializeField] RuleTile borderTile;
 
+    [SerializeField] City city;
+    [SerializeField] Village village;
+
     private List<Region> regions = new List<Region>();
 
     int minimumRegionSize = 7;
     int maximumRegionSize = 12;
+
+    int numberOfCities = 6;
 
     public void CreateRegion(TileNode startingNode)
     {
@@ -276,12 +281,48 @@ public class RegionManager : MonoBehaviour
 
         return true;
     }
+
+    public void PlaceSettlements()
+    {
+        List<Region> occupiedRegions = new List<Region>();
+        for(int i = 0; i < numberOfCities; i++)
+        {
+            occupiedRegions.Add(PlaceCity(occupiedRegions));
+        }
+
+        foreach(Region region in regions)
+        {
+            if (!occupiedRegions.Contains(region))
+            {
+                Village newVillage = Instantiate(village);
+                newVillage.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(region.SetSettlement(newVillage));
+                occupiedRegions.Add(region);
+            }
+        }
+    }
+
+    public Region PlaceCity(List<Region> occupiedRegions)
+    {
+        Region region = regions[Random.Range(0, regions.Count)];
+        if (occupiedRegions.Contains(region))
+        {
+            return PlaceCity(occupiedRegions);
+        }
+        else
+        {
+            City newCity = Instantiate(city);
+            newCity.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(region.SetSettlement(newCity));
+            return region;
+        }
+    }
 }
 
 public class Region
 {
     List<TileNode> tilesInRegion;
     public List<Region> neighbors;
+
+    Settlement settlement;
 
     public Region()
     {
@@ -297,6 +338,19 @@ public class Region
     {
         newNode.AssignRegion(this);
         tilesInRegion.Add(newNode);
+    }
+
+    public TileNode SetSettlement(Settlement settlement)
+    {
+        this.settlement = settlement;
+        TileNode node = tilesInRegion[Random.Range(0, tilesInRegion.Count)];
+        node.SetBuilding(settlement);
+        return node;
+    }
+
+    public Settlement GetSettlement()
+    {
+        return settlement;
     }
 
     public void FindNeighboringRegions()

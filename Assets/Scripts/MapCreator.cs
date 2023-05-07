@@ -40,6 +40,8 @@ public class MapCreator : MonoBehaviour
         Debug.Log("Creating Regions");
         CreateRegions();
         DrawBorders();
+        Debug.Log("Placeing Settlements");
+        PlaceSettlements();
         
     }
 
@@ -52,7 +54,7 @@ public class MapCreator : MonoBehaviour
                 operateOnTile(x, y, noiseMap, terrainThreshholds);
                 if (!labelsPlaced)
                 {
-                    PlaceTileCoordinateLabel(new Vector3Int(x, y, 0));
+                    //PlaceTileCoordinateLabel(new Vector3Int(x, y, 0));
                 }
             }
         }
@@ -503,6 +505,11 @@ public class MapCreator : MonoBehaviour
         {
             regionManager.DrawBorders(coordinates);
         }
+    }
+
+    private void PlaceSettlements()
+    {
+        regionManager.PlaceSettlements();
     }
 }
 

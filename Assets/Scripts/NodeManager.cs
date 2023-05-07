@@ -130,6 +130,7 @@ public class TileNode
     RiverNode[] riverBorders;
     int forestLevel = 0;
     Region region;
+    TileBuilding building;
 
     
 
@@ -184,6 +185,16 @@ public class TileNode
     public void ChangeForestLevel(int forrestAdjustment)
     {
         forestLevel += forrestAdjustment;
+    }
+
+    public void SetBuilding(TileBuilding building)
+    {
+        this.building = building;
+    }
+
+    public TileBuilding GetBuilding()
+    {
+        return building;
     }
 
     private void FindAllNeighbors()
