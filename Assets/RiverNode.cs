@@ -223,11 +223,11 @@ public class RiverNode : MonoBehaviour
             validBorderRiverNode = true;
             if (riverRunsClockwise)
             {
-                riverStartIndex = previousNodeBorderIndex;
+                riverStartIndex = thisNode.GetClockwiseNeighbor(previousNodeBorderIndex);
             }
             else
             {
-                riverStartIndex = thisNode.GetClockwiseNeighbor(previousNodeBorderIndex);
+                riverStartIndex = previousNodeBorderIndex;
             }
         }
 
