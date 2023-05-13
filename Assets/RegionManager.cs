@@ -296,6 +296,7 @@ public class RegionManager : MonoBehaviour
             {
                 Village newVillage = Instantiate(village);
                 newVillage.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(region.SetSettlement(newVillage));
+                newVillage.SetName(CityNameGenerator.Instance.GetRandomCityName());
                 occupiedRegions.Add(region);
             }
         }
@@ -312,6 +313,7 @@ public class RegionManager : MonoBehaviour
         {
             City newCity = Instantiate(city);
             newCity.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(region.SetSettlement(newCity));
+            newCity.SetName(CityNameGenerator.Instance.GetRandomCityName());
             return region;
         }
     }
