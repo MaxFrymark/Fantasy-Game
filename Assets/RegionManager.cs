@@ -285,9 +285,10 @@ public class RegionManager : MonoBehaviour
     public void PlaceSettlements()
     {
         List<Region> occupiedRegions = new List<Region>();
+        FactionCreator factionCreator = new FactionCreator();
         for(int i = 0; i < numberOfCities; i++)
         {
-            occupiedRegions.Add(PlaceCity(occupiedRegions));
+            occupiedRegions.Add(PlaceCity(occupiedRegions, factionCreator));
         }
 
         foreach(Region region in regions)
@@ -302,18 +303,21 @@ public class RegionManager : MonoBehaviour
         }
     }
 
-    public Region PlaceCity(List<Region> occupiedRegions)
+    public Region PlaceCity(List<Region> occupiedRegions, FactionCreator factionCreator)
     {
         Region region = regions[Random.Range(0, regions.Count)];
         if (occupiedRegions.Contains(region))
         {
-            return PlaceCity(occupiedRegions);
+            return PlaceCity(occupiedRegions, factionCreator);
         }
         else
         {
             City newCity = Instantiate(city);
             newCity.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(region.SetSettlement(newCity));
             newCity.SetName(CityNameGenerator.Instance.GetRandomCityName());
+            Faction faction = factionCreator.CreateFaction(newCity);
+            newCity.SetCityFlagColor(faction.GetFactionColor());
+            region.SetOwner(faction);
             return region;
         }
     }
@@ -321,7 +325,10 @@ public class RegionManager : MonoBehaviour
 
 public class Region
 {
+    Faction owner;
+    
     List<TileNode> tilesInRegion;
+    List<RegionBorder> borders;
     public List<Region> neighbors;
 
     Settlement settlement;
@@ -329,6 +336,7 @@ public class Region
     public Region()
     {
         tilesInRegion = new List<TileNode>();
+        borders = new List<RegionBorder>();
     }
 
     public List<TileNode> GetTilesInRegion()
@@ -370,6 +378,24 @@ public class Region
                     }
                 }
             }
+        }
+    }
+
+    public void SetOwner(Faction owner)
+    {
+        this.owner = owner;
+        foreach(RegionBorder border in borders)
+        {
+            border.ChangeBoderColor(owner.GetFactionColor());
+        }
+    }
+
+    public void AddBorderToBorderList(RegionBorder regionBorder)
+    {
+        borders.Add(regionBorder);
+        if (owner != null)
+        {
+            regionBorder.ChangeBoderColor(owner.GetFactionColor());
         }
     }
 }

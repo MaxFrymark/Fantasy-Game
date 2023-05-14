@@ -301,7 +301,7 @@ public class MapCreator : MonoBehaviour
             
             if (river != null && river.Count > 2)
             {
-                Debug.Log("Start River");
+                //Debug.Log("Start River");
                 GameObject riverParent = Instantiate(new GameObject(), Vector3.zero, Quaternion.identity);
                 riverParent.name = "River";
                 List<RiverNode> riverNodes = PlaceRiverTiles(river, riverParent.transform);
@@ -309,7 +309,7 @@ public class MapCreator : MonoBehaviour
                 {
                     node.SelectVisibleRiverSegments(riverNodes);
                 }
-                Debug.Log("End River");
+                //Debug.Log("End River");
             }
         }
     }

@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settlementNameField: {fileID: 8658604782836633625}
+  cityFlag: {fileID: 4502168466305464983}
 --- !u!1 &5084906296669493054
 GameObject:
   m_ObjectHideFlags: 0

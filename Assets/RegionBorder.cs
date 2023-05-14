@@ -28,6 +28,16 @@ public class RegionBorder : MonoBehaviour
                 borderSprites[i].gameObject.SetActive(true);
             }
         }
+
+        homeNode.GetRegion().AddBorderToBorderList(this);
+    }
+
+    public void ChangeBoderColor(Color color)
+    {
+        foreach(SpriteRenderer sprite in borderSprites)
+        {
+            sprite.color = color;
+        }
     }
 
 }

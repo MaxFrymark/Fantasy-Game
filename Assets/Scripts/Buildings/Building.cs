@@ -10,4 +10,9 @@ public abstract class Building : MonoBehaviour
     {
         this.home = home;
     }
+
+    public Region GetHomeRegion()
+    {
+        return home;
+    }
 }

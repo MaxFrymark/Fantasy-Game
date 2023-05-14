@@ -13,4 +13,9 @@ public abstract class Settlement : TileBuilding
         this.settlementName = settlementName;
         settlementNameField.text = settlementName;
     }
+
+    public string GetSettlementName()
+    {
+        return settlementName;
+    }
 }

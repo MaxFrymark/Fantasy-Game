@@ -22,15 +22,15 @@ public class RiverNode : MonoBehaviour
 
     public void SelectVisibleRiverSegments(List<RiverNode> river)
     {
-        Debug.Log("Start River Node");
+        //Debug.Log("Start River Node");
         this.river = river;
         thisNode = NodeManager.Instance.GetTileNode(transform.position);
-        Debug.Log("Coordinates: " + thisNode.GetCoordinates());
+        //Debug.Log("Coordinates: " + thisNode.GetCoordinates());
         int index = FindThisNodesIndex();
         //Debug.Log("Index: " + index);
         //Debug.Log("This Node: " + thisNode.GetCoordinates());
         FindPreviousNode(index);
-        Debug.Log("Previous Node Border Index: " + previousNodeBorderIndex);
+        //Debug.Log("Previous Node Border Index: " + previousNodeBorderIndex);
         FindNextNode(index);
         ChooseRiverDirection();
 
@@ -47,12 +47,12 @@ public class RiverNode : MonoBehaviour
             iterateRiver = thisNode.GetCounterClockwiseNeighbor;
         }
         //Debug.Log("Ta-Da!");
-        Debug.Log("Start Point: " + riverStartIndex);
-        Debug.Log("End Point: " + riverEndIndex);
-        Debug.Log("IsClockwise: " + riverRunsClockwise);
+        //Debug.Log("Start Point: " + riverStartIndex);
+        //Debug.Log("End Point: " + riverEndIndex);
+        //Debug.Log("IsClockwise: " + riverRunsClockwise);
 
         PlaceRiver(iterateRiver, riverStartIndex);
-        Debug.Log("End River Node");
+        //Debug.Log("End River Node");
     }
 
     private int FindThisNodesIndex()
