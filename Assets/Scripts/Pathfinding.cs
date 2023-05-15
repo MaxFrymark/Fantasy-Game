@@ -48,15 +48,15 @@ public class Pathfinding
             for(int y = -30; y <= 30; y++)
             {
                 TileNode node = grid.GetTileNode(x, y);
-                node.pathFindingData.gCost = int.MaxValue;
-                node.pathFindingData.CalculateFCost();
-                node.pathFindingData.cameFromNode = null;
+                node.GetNodePathFindingData().gCost = int.MaxValue;
+                node.GetNodePathFindingData().CalculateFCost();
+                node.GetNodePathFindingData().cameFromNode = null;
             }
         }
 
-        startNode.pathFindingData.gCost = CalculateTerrainModifier(startNode);
-        startNode.pathFindingData.hCost = CalculateDistanceCost(startNode, endNode);
-        startNode.pathFindingData.CalculateFCost();
+        startNode.GetNodePathFindingData().gCost = CalculateTerrainModifier(startNode);
+        startNode.GetNodePathFindingData().hCost = CalculateDistanceCost(startNode, endNode);
+        startNode.GetNodePathFindingData().CalculateFCost();
 
         while(openList.Count > 0)
         {
@@ -68,21 +68,21 @@ public class Pathfinding
             openList.Remove(currentNode);
             closedList.Add(currentNode);
 
-            foreach(TileNode adjacentNode in currentNode.GetNeighbors())
+            foreach(TileNode adjacentNode in currentNode.GetNodeNeighborData().GetNeighbors())
             {
                 if (closedList.Contains(adjacentNode)) continue;
-                if (adjacentNode.IsNodeOcean())
+                if (adjacentNode.GetNodeTerrainData().IsNodeOcean())
                 {
                     closedList.Add(adjacentNode);
                     continue;
                 }
-                int tentativeGCost = currentNode.pathFindingData.gCost + CalculateDistanceCost(currentNode, adjacentNode);
-                if(tentativeGCost < adjacentNode.pathFindingData.gCost)
+                int tentativeGCost = currentNode.GetNodePathFindingData().gCost + CalculateDistanceCost(currentNode, adjacentNode);
+                if(tentativeGCost < adjacentNode.GetNodePathFindingData().gCost)
                 {
-                    adjacentNode.pathFindingData.cameFromNode = currentNode;
-                    adjacentNode.pathFindingData.gCost = tentativeGCost + CalculateTerrainModifier(adjacentNode);
-                    adjacentNode.pathFindingData.hCost = CalculateDistanceCost(adjacentNode, endNode);
-                    adjacentNode.pathFindingData.CalculateFCost();
+                    adjacentNode.GetNodePathFindingData().cameFromNode = currentNode;
+                    adjacentNode.GetNodePathFindingData().gCost = tentativeGCost + CalculateTerrainModifier(adjacentNode);
+                    adjacentNode.GetNodePathFindingData().hCost = CalculateDistanceCost(adjacentNode, endNode);
+                    adjacentNode.GetNodePathFindingData().CalculateFCost();
 
                     if (!openList.Contains(adjacentNode))
                     {
@@ -106,19 +106,19 @@ public class Pathfinding
     private int CalculateTerrainModifier(TileNode node)
     {
         int terrainModifer = 0;
-        switch (node.GetTerrainType())
+        switch (node.GetNodeTerrainData().GetTerrainType())
         {
-            case MapCreator.TerrainType.plains:
+            case TileNode.TerrainType.plains:
                 terrainModifer += TERRAIN_COST_PLAINS;
                 break;
-            case MapCreator.TerrainType.hills:
+            case TileNode.TerrainType.hills:
                 terrainModifer += TERRAIN_COST_HILLS;
                 break;
-            case MapCreator.TerrainType.mountain:
+            case TileNode.TerrainType.mountain:
                 terrainModifer += TERRAIN_COST_MOUNTAIN;
                 break;
         }
-        terrainModifer += TERRAIN_COST_FOREST * node.GetForestLevel();
+        terrainModifer += TERRAIN_COST_FOREST * node.GetNodeTerrainData().GetForestLevel();
         return terrainModifer;
     }
 
@@ -127,7 +127,7 @@ public class Pathfinding
         TileNode lowestCostNode = nodeList[0];
         for(int i = 1; i < nodeList.Count; i++)
         {
-            if(nodeList[i].pathFindingData.fCost < lowestCostNode.pathFindingData.fCost)
+            if(nodeList[i].GetNodePathFindingData().fCost < lowestCostNode.GetNodePathFindingData().fCost)
             {
                 lowestCostNode = nodeList[i];
             }
@@ -140,10 +140,10 @@ public class Pathfinding
         List<TileNode> path = new List<TileNode>();
         //path.Add(endNode);
         TileNode currentNode = endNode;
-        while (currentNode.pathFindingData.cameFromNode != null)
+        while (currentNode.GetNodePathFindingData().cameFromNode != null)
         {
             path.Add(currentNode);
-            currentNode = currentNode.pathFindingData.cameFromNode;
+            currentNode = currentNode.GetNodePathFindingData().cameFromNode;
         }
         path.Reverse();
         return path;

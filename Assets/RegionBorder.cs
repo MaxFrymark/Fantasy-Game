@@ -10,7 +10,7 @@ public class RegionBorder : MonoBehaviour
     void Start()
     {
         TileNode homeNode = NodeManager.Instance.GetTileNode(transform.position);
-        TileNode[] neighbors = homeNode.GetNeighbors();
+        TileNode[] neighbors = homeNode.GetNodeNeighborData().GetNeighbors();
         for(int i = 0; i < neighbors.Length; i++)
         {
             if (neighbors[i] == null)
@@ -18,7 +18,7 @@ public class RegionBorder : MonoBehaviour
                 continue;
             }
 
-            if (neighbors[i].GetTerrainType() == MapCreator.TerrainType.ocean)
+            if (neighbors[i].GetNodeTerrainData().GetTerrainType() == TileNode.TerrainType.ocean)
             {
                 continue;
             }

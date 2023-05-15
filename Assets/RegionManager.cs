@@ -45,7 +45,7 @@ public class RegionManager : MonoBehaviour
     private int AddNodesToRegion(int regionSize, TileNode node)
     {
         int tilesAdded = 0;
-        foreach (TileNode neighboringNode in node.GetNeighbors())
+        foreach (TileNode neighboringNode in node.GetNodeNeighborData().GetNeighbors())
         {
             if (CanNodeBeAddedToRegion(regionSize, neighboringNode))
             {
@@ -64,7 +64,7 @@ public class RegionManager : MonoBehaviour
             return false;
         }
 
-        if (neighboringNode.GetTerrainType() == MapCreator.TerrainType.ocean)
+        if (neighboringNode.GetNodeTerrainData().GetTerrainType() == TileNode.TerrainType.ocean)
         {
             return false;
         }
@@ -81,9 +81,9 @@ public class RegionManager : MonoBehaviour
     {
         foreach (TileNode node in region.GetTilesInRegion())
         {
-            foreach (TileNode neighboringNode in node.GetNeighbors())
+            foreach (TileNode neighboringNode in node.GetNodeNeighborData().GetNeighbors())
             {
-                if (neighboringNode.GetTerrainType() == MapCreator.TerrainType.ocean)
+                if (neighboringNode.GetNodeTerrainData().IsNodeOcean())
                 {
                     continue;
                 }
@@ -135,9 +135,9 @@ public class RegionManager : MonoBehaviour
             if(tileNode.IsBorderTile())
             {
                 List<Region> neighboringRegions = new List<Region>();
-                foreach(TileNode neighboringNode in tileNode.GetNeighbors())
+                foreach(TileNode neighboringNode in tileNode.GetNodeNeighborData().GetNeighbors())
                 {
-                    if (neighboringNode.IsNodeOcean())
+                    if (neighboringNode.GetNodeTerrainData().IsNodeOcean())
                     {
                         continue;
                     }
@@ -250,7 +250,7 @@ public class RegionManager : MonoBehaviour
     private int AddNodesToRegion(int regionSize, TileNode node, Region startingRegion)
     {
         int tilesAdded = 0;
-        foreach (TileNode neighboringNode in node.GetNeighbors())
+        foreach (TileNode neighboringNode in node.GetNodeNeighborData().GetNeighbors())
         {
             if (CanNodeBeAddedToRegion(regionSize, neighboringNode, startingRegion))
             {
@@ -269,7 +269,7 @@ public class RegionManager : MonoBehaviour
             return false;
         }
 
-        if (neighboringNode.GetTerrainType() == MapCreator.TerrainType.ocean)
+        if (neighboringNode.GetNodeTerrainData().GetTerrainType() == TileNode.TerrainType.ocean)
         {
             return false;
         }
@@ -369,7 +369,7 @@ public class Region
         {
             if (tileNode.IsBorderTile())
             {
-                foreach(TileNode neighbor in tileNode.GetNeighbors())
+                foreach(TileNode neighbor in tileNode.GetNodeNeighborData().GetNeighbors())
                 {
                     Region neighboringRegion = neighbor.GetRegion();
                     if(neighboringRegion != null && neighboringRegion != this && !neighbors.Contains(neighboringRegion))

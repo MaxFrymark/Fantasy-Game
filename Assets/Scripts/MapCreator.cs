@@ -24,7 +24,6 @@ public class MapCreator : MonoBehaviour
     private delegate void OperateOnTile(int x, int y, float[,] noiseMap, float[] terrainThreshholds);
     
 
-    public enum TerrainType { ocean, plains, mountain, hills }
 
     void Start()
     {
@@ -118,10 +117,10 @@ public class MapCreator : MonoBehaviour
     {
         Vector3Int tilePos = new Vector3Int(x, y);
         float noisemapValue = noiseMap[x + mapWidth, y + mapHeight] - GetPositionModifier(tilePos);
-        TerrainType terrainToAssign = TerrainType.ocean;
+        TileNode.TerrainType terrainToAssign = TileNode.TerrainType.ocean;
         if (noisemapValue > terrainThreshholds[0])
         {
-            terrainToAssign = TerrainType.plains;
+            terrainToAssign = TileNode.TerrainType.plains;
         }
         nodeManager.PlaceNode(tilePos, terrainToAssign);
     }
@@ -143,7 +142,7 @@ public class MapCreator : MonoBehaviour
                 }
                 
                 
-                if (node.GetTerrainType() == TerrainType.plains)
+                if (node.GetNodeTerrainData().GetTerrainType() == TileNode.TerrainType.plains)
                 {
                     islands.Add(BuildGroupOfMatchingTiles(checkedTiles, node, false));
                 }
@@ -180,7 +179,7 @@ public class MapCreator : MonoBehaviour
             {
                 foreach(TileNode tileNode in island)
                 {
-                    nodeManager.PlaceNode(tileNode.GetCoordinates(), TerrainType.ocean);
+                    nodeManager.PlaceNode(tileNode.GetCoordinates(), TileNode.TerrainType.ocean);
                 }
             }
         }
@@ -195,7 +194,7 @@ public class MapCreator : MonoBehaviour
         checkedTiles.Add(startingNode);
         tileGroup.Add(startingNode);
 
-        foreach(TileNode node in startingNode.GetNeighbors())
+        foreach(TileNode node in startingNode.GetNodeNeighborData().GetNeighbors())
         {
             if(node == null)
             {
@@ -207,7 +206,7 @@ public class MapCreator : MonoBehaviour
                 continue;
             }
 
-            if (node.GetTerrainType() != startingNode.GetTerrainType())
+            if (node.GetNodeTerrainData().GetTerrainType() != startingNode.GetNodeTerrainData().GetTerrainType())
             {
                 continue;
             }
@@ -237,7 +236,7 @@ public class MapCreator : MonoBehaviour
     {
         Vector3Int tilePos = new Vector3Int(x, y);
 
-        if (nodeManager.GetTileNode(tilePos).IsNodeOcean())
+        if (nodeManager.GetTileNode(tilePos).GetNodeTerrainData().IsNodeOcean())
         {
             return;
         }
@@ -246,12 +245,12 @@ public class MapCreator : MonoBehaviour
 
         if (noisemapValue > terrainThreshholds[0])
         {
-            nodeManager.PlaceNode(tilePos, TerrainType.mountain);
+            nodeManager.PlaceNode(tilePos, TileNode.TerrainType.mountain);
         }
 
         else if (noisemapValue > terrainThreshholds[1])
         {
-            nodeManager.PlaceNode(tilePos, TerrainType.hills);
+            nodeManager.PlaceNode(tilePos, TileNode.TerrainType.hills);
         }
     }
 
@@ -267,8 +266,8 @@ public class MapCreator : MonoBehaviour
     {
         Vector3Int tilePos = new Vector3Int(x, y);
         TileNode tileNode = nodeManager.GetTileNode(tilePos);
-        TerrainType terrainType = tileNode.GetTerrainType();
-        if (terrainType == TerrainType.ocean || terrainType == TerrainType.mountain)
+        TileNode.TerrainType terrainType = tileNode.GetNodeTerrainData().GetTerrainType();
+        if (terrainType == TileNode.TerrainType.ocean || terrainType == TileNode.TerrainType.mountain)
         {
             return;
         }
@@ -285,7 +284,7 @@ public class MapCreator : MonoBehaviour
             forrestAdjustment = 1;
         }
 
-        tileNode.ChangeForestLevel(forrestAdjustment);
+        tileNode.GetNodeTerrainData().ChangeForestLevel(forrestAdjustment);
         nodeManager.PlaceNode(tileNode.GetCoordinates(), terrainType);
     }
 
@@ -331,7 +330,7 @@ public class MapCreator : MonoBehaviour
                 }
 
 
-                if (node.IsNodeOcean())
+                if (node.GetNodeTerrainData().IsNodeOcean())
                 {
                     seas.Add(BuildGroupOfMatchingTiles(checkedTiles, node, true));
                 }
@@ -371,7 +370,7 @@ public class MapCreator : MonoBehaviour
                 }
 
 
-                if (node.GetTerrainType() == TerrainType.mountain)
+                if (node.GetNodeTerrainData().GetTerrainType() == TileNode.TerrainType.mountain)
                 {
                     mountainRanges.Add(BuildGroupOfMatchingTiles(checkedTiles, node, false));
                 }
@@ -392,9 +391,9 @@ public class MapCreator : MonoBehaviour
         TileNode closestOceanTile = FindClosestTile(ocean, center);
 
         TileNode destinationTile = null;
-        foreach(TileNode neighbor in closestOceanTile.GetNeighbors())
+        foreach(TileNode neighbor in closestOceanTile.GetNodeNeighborData().GetNeighbors())
         {
-            if (!neighbor.IsNodeOcean())
+            if (!neighbor.GetNodeTerrainData().IsNodeOcean())
             {
                 destinationTile = neighbor;
                 break;
@@ -474,7 +473,7 @@ public class MapCreator : MonoBehaviour
     private void MapOperation_CreateRegions(int x, int y, float[,] noiseMap, float[] terrainThreshholds)
     {
         TileNode node = nodeManager.GetTileNode(new Vector3Int(x, y, 0));
-        if (node.IsNodeOcean())
+        if (node.GetNodeTerrainData().IsNodeOcean())
         {
             return;
         }
@@ -496,7 +495,7 @@ public class MapCreator : MonoBehaviour
         Vector3Int coordinates = new Vector3Int(x, y, 0);
         TileNode node = nodeManager.GetTileNode(coordinates);
 
-        if (node.GetTerrainType() == TerrainType.ocean)
+        if (node.GetNodeTerrainData().GetTerrainType() == TileNode.TerrainType.ocean)
         {
             return;
         }
