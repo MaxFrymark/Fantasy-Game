@@ -17,13 +17,10 @@ public class MapCreator : MonoBehaviour
     [SerializeField] Transform labelParent;
     bool labelsPlaced = false;
 
-
     int mapWidth = 30;
     int mapHeight = 30;
 
     private delegate void OperateOnTile(int x, int y, float[,] noiseMap, float[] terrainThreshholds);
-    
-
 
     void Start()
     {
@@ -60,38 +57,9 @@ public class MapCreator : MonoBehaviour
         labelsPlaced = true;
     }
 
-    private List<NoiseWave> GenerateNoiseWaves(int noiseLayers, float frequencyMin, float frequencyMax)
-    {
-        List<NoiseWave> noiseWaves = new List<NoiseWave>();
-        for (int i = 0; i < noiseLayers; i++)
-        {
-            float frequency = Random.Range(frequencyMin, frequencyMax);
-            NoiseWave wave = new NoiseWave(Random.Range(0, 500), frequency, (float)i / noiseLayers);
-            noiseWaves.Add(wave);
-        }
+    
 
-        return noiseWaves;
-    }
-
-    private float[,] GenerateNoiseMap(List<NoiseWave> waves)
-    {
-        float[,] noiseMap = new float[mapWidth * 2 + 1, mapHeight * 2 + 1];
-        for (int x = 0; x <= mapWidth * 2; x++)
-        {
-            for (int y = 0; y <= mapHeight * 2; y++)
-            {
-                float normalization = 0f;
-                foreach (NoiseWave wave in waves)
-                {
-                    noiseMap[x, y] += wave.amplitude * Mathf.PerlinNoise(x * wave.frequency + wave.seed, y * wave.frequency + wave.seed);
-                    normalization += wave.amplitude;
-                }
-                noiseMap[x, y] /= normalization;
-            }
-        }
-
-        return noiseMap;
-    }
+    
 
     private float GetPositionModifier(Vector3Int tilePos)
     {
@@ -512,16 +480,4 @@ public class MapCreator : MonoBehaviour
     }
 }
 
-public class NoiseWave
-{
-    public float seed;
-    public float frequency;
-    public float amplitude;
 
-    public NoiseWave(float seed, float frequency, float amplitude)
-    {
-        this.seed = seed;
-        this.frequency = frequency;
-        this.amplitude = amplitude;
-    }
-}
