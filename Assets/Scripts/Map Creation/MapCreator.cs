@@ -17,413 +17,57 @@ public class MapCreator : MonoBehaviour
     [SerializeField] Transform labelParent;
     bool labelsPlaced = false;
 
-    int mapWidth = 30;
-    int mapHeight = 30;
+    GenerateLandmass generateLandmass;
+    GenerateMountains generateMountains;
+    GenerateRivers generateRivers;
+    GenerateForests generateForests;
+    GenerateRegions generateRegions;
 
-    private delegate void OperateOnTile(int x, int y, float[,] noiseMap, float[] terrainThreshholds);
 
-    void Start()
+    public void SetMapGenerationStages(GenerateLandmass generateLandmass, GenerateMountains generateMountains, GenerateRivers generateRivers,
+         GenerateForests generateForests, GenerateRegions generateRegions)
+    {
+        this.generateLandmass = generateLandmass;
+        this.generateMountains = generateMountains;
+        this.generateRivers = generateRivers;
+        this.generateForests = generateForests;
+        this.generateRegions = generateRegions;
+
+        CreateMap();
+    }
+
+    void CreateMap()
     {
         Debug.Log("Drawing Continent");
-        DrawContinent();
-        EliminateIslands();
+        generateLandmass.GenerateMap();
         Debug.Log("Drawing Mountains");
-        DrawMountains();
+        generateMountains.GenerateMap();
         Debug.Log("Drawing Rivers");
-        DrawRivers();
+        generateRivers.GenerateMap();
         Debug.Log("Drawing Forests");
-        DrawForest();
+        generateForests.GenerateMap();
         Debug.Log("Creating Regions");
-        CreateRegions();
-        DrawBorders();
+        generateRegions.GenerateMap();
         Debug.Log("Placeing Settlements");
         PlaceSettlements();
         
     }
 
-    private void IterateThroughAllTiles(OperateOnTile operateOnTile, float[,] noiseMap, float[] terrainThreshholds)
-    {
-        for(int x = -mapWidth; x <= mapWidth; x++)
-        {
-            for(int y = - mapHeight; y <= mapHeight; y++)
-            {
-                operateOnTile(x, y, noiseMap, terrainThreshholds);
-                if (!labelsPlaced)
-                {
-                    //PlaceTileCoordinateLabel(new Vector3Int(x, y, 0));
-                }
-            }
-        }
-        labelsPlaced = true;
-    }
+    
+
+    
 
     
 
     
 
-    private float GetPositionModifier(Vector3Int tilePos)
-    {
-        if (Mathf.Abs(tilePos.x) > Mathf.Abs(tilePos.y))
-        {
-            return Mathf.Pow(tilePos.x, 2) / (float)Mathf.Pow(mapWidth, 2);
-        }
-        else
-        {
-            return Mathf.Pow(tilePos.y, 2) / (float)Mathf.Pow(mapHeight, 2);
-        }
-    }
+    
 
-    private void DrawContinent()
-    {
-        List<NoiseWave> noiseWaves = GenerateNoiseWaves(2, 0.1f, 0.2f);
-        float[,] noiseMap = GenerateNoiseMap(noiseWaves);
-        float[] terrainThreshholds = new float[1] { 0.1f };
-        IterateThroughAllTiles(MapOperation_DrawContinent, noiseMap, terrainThreshholds);
-    }
+    
 
-    private void MapOperation_DrawContinent(int x, int y, float[,] noiseMap, float[] terrainThreshholds)
-    {
-        Vector3Int tilePos = new Vector3Int(x, y);
-        float noisemapValue = noiseMap[x + mapWidth, y + mapHeight] - GetPositionModifier(tilePos);
-        TileNode.TerrainType terrainToAssign = TileNode.TerrainType.ocean;
-        if (noisemapValue > terrainThreshholds[0])
-        {
-            terrainToAssign = TileNode.TerrainType.plains;
-        }
-        nodeManager.PlaceNode(tilePos, terrainToAssign);
-    }
+    
 
-    private void EliminateIslands()
-    {
-        List<TileNode> checkedTiles = new List<TileNode>();
-        List<List<TileNode>> islands = new List<List<TileNode>>();
-
-        for(int x = -mapWidth; x <= mapWidth; x++)
-        {
-            for(int y = -mapHeight; y <= mapHeight; y++)
-            {
-                TileNode node = nodeManager.GetTileNode(new Vector3Int(x, y));
-
-                if (checkedTiles.Contains(node))
-                {
-                    continue;
-                }
-                
-                
-                if (node.GetNodeTerrainData().GetTerrainType() == TileNode.TerrainType.plains)
-                {
-                    islands.Add(BuildGroupOfMatchingTiles(checkedTiles, node, false));
-                }
-
-                else
-                {
-                    checkedTiles.Add(node);
-                }
-            }
-        }
-
-        ReplaceIslandsWithOcean(islands);
-    }
-
-    private void ReplaceIslandsWithOcean(List<List<TileNode>> islands)
-    {
-        List<TileNode> largestIsland = null;
-        foreach(List<TileNode> island in islands)
-        {
-            if(largestIsland == null)
-            {
-                largestIsland = island;
-            }
-
-            else if(island.Count > largestIsland.Count)
-            {
-                largestIsland = island;
-            }
-        }
-
-        foreach(List<TileNode> island in islands)
-        {
-            if(island != largestIsland)
-            {
-                foreach(TileNode tileNode in island)
-                {
-                    nodeManager.PlaceNode(tileNode.GetCoordinates(), TileNode.TerrainType.ocean);
-                }
-            }
-        }
-    }
-
-    private List<TileNode> BuildGroupOfMatchingTiles(List<TileNode> checkedTiles, TileNode startingNode, bool debugging)
-    {
-        
-
-        List<TileNode> tileGroup = new List<TileNode>();
-
-        checkedTiles.Add(startingNode);
-        tileGroup.Add(startingNode);
-
-        foreach(TileNode node in startingNode.GetNodeNeighborData().GetNeighbors())
-        {
-            if(node == null)
-            {
-                continue;
-            }
-            
-            if (checkedTiles.Contains(node))
-            {
-                continue;
-            }
-
-            if (node.GetNodeTerrainData().GetTerrainType() != startingNode.GetNodeTerrainData().GetTerrainType())
-            {
-                continue;
-            }
-
-            foreach(TileNode tileNode in BuildGroupOfMatchingTiles(checkedTiles, node, false))
-            {
-
-                
-                tileGroup.Add(tileNode);
-            }
-        }
-        
-
-
-        return tileGroup;
-    }
-
-    private void DrawMountains()
-    {
-        List<NoiseWave> noiseWaves = GenerateNoiseWaves(2, 0.2f, 0.3f);
-        float[,] noiseMap = GenerateNoiseMap(noiseWaves);
-        float[] terrainThreshholds = new float[2] { 0.75f, 0.55f };
-        IterateThroughAllTiles(MapOperation_DrawMountains, noiseMap, terrainThreshholds);
-    }
-
-    private void MapOperation_DrawMountains(int x, int y, float[,] noiseMap, float[] terrainThreshholds)
-    {
-        Vector3Int tilePos = new Vector3Int(x, y);
-
-        if (nodeManager.GetTileNode(tilePos).GetNodeTerrainData().IsNodeOcean())
-        {
-            return;
-        }
-
-        float noisemapValue = noiseMap[x + mapWidth, y + mapHeight];
-
-        if (noisemapValue > terrainThreshholds[0])
-        {
-            nodeManager.PlaceNode(tilePos, TileNode.TerrainType.mountain);
-        }
-
-        else if (noisemapValue > terrainThreshholds[1])
-        {
-            nodeManager.PlaceNode(tilePos, TileNode.TerrainType.hills);
-        }
-    }
-
-    private void DrawForest()
-    {
-        List<NoiseWave> noiseWaves = GenerateNoiseWaves(2, .1f, .2f);
-        float[,] noiseMap = GenerateNoiseMap(noiseWaves);
-        float[] terrainThreshholds = new float[2] { 0.65f, 0.45f };
-        IterateThroughAllTiles(MapOperation_DrawForest, noiseMap, terrainThreshholds);
-    }
-
-    private void MapOperation_DrawForest(int x, int y, float[,] noiseMap, float[] terrainThreshholds)
-    {
-        Vector3Int tilePos = new Vector3Int(x, y);
-        TileNode tileNode = nodeManager.GetTileNode(tilePos);
-        TileNode.TerrainType terrainType = tileNode.GetNodeTerrainData().GetTerrainType();
-        if (terrainType == TileNode.TerrainType.ocean || terrainType == TileNode.TerrainType.mountain)
-        {
-            return;
-        }
-
-        float noisemapValue = noiseMap[x + mapWidth, y + mapHeight];
-        int forrestAdjustment = 0;
-        if (noisemapValue > terrainThreshholds[0])
-        {
-            forrestAdjustment = 2;
-        }
-
-        else if (noisemapValue > terrainThreshholds[1])
-        {
-            forrestAdjustment = 1;
-        }
-
-        tileNode.GetNodeTerrainData().ChangeForestLevel(forrestAdjustment);
-        nodeManager.PlaceNode(tileNode.GetCoordinates(), terrainType);
-    }
-
-    private void DrawRivers()
-    {
-        List<TileNode> ocean = FindOcean();
-        List<List<TileNode>> mountainRanges = FindMountainRanges();
-        foreach(List<TileNode> mountainRange in mountainRanges)
-        {
-
-            List<TileNode> river = DrawRiverFromMountain(mountainRange, ocean);
-
-            
-            if (river != null && river.Count > 2)
-            {
-                //Debug.Log("Start River");
-                GameObject riverParent = Instantiate(new GameObject(), Vector3.zero, Quaternion.identity);
-                riverParent.name = "River";
-                List<RiverNode> riverNodes = PlaceRiverTiles(river, riverParent.transform);
-                foreach(RiverNode node in riverNodes)
-                {
-                    node.SelectVisibleRiverSegments(riverNodes);
-                }
-                //Debug.Log("End River");
-            }
-        }
-    }
-
-    private List<TileNode> FindOcean()
-    {
-        List<TileNode> checkedTiles = new List<TileNode>();
-        List<List<TileNode>> seas = new List<List<TileNode>>();
-
-        for (int x = -mapWidth; x <= mapWidth; x++)
-        {
-            for (int y = -mapHeight; y <= mapHeight; y++)
-            {
-                TileNode node = nodeManager.GetTileNode(new Vector3Int(x, y));
-
-                if (checkedTiles.Contains(node))
-                {
-                    continue;
-                }
-
-
-                if (node.GetNodeTerrainData().IsNodeOcean())
-                {
-                    seas.Add(BuildGroupOfMatchingTiles(checkedTiles, node, true));
-                }
-
-                else
-                {
-                    checkedTiles.Add(node);
-                }
-            }
-        }
-
-        List<TileNode> largestSea = seas[0];
-        foreach(List<TileNode> sea in seas)
-        {
-            if(sea.Count > largestSea.Count)
-            {
-                largestSea = sea;
-            }
-        }
-        return largestSea;
-    }
-
-    private List<List<TileNode>> FindMountainRanges()
-    {
-        List<TileNode> checkedTiles = new List<TileNode>();
-        List<List<TileNode>> mountainRanges = new List<List<TileNode>>();
-
-        for (int x = -mapWidth; x <= mapWidth; x++)
-        {
-            for (int y = -mapHeight; y <= mapHeight; y++)
-            {
-                TileNode node = nodeManager.GetTileNode(new Vector3Int(x, y));
-
-                if (checkedTiles.Contains(node))
-                {
-                    continue;
-                }
-
-
-                if (node.GetNodeTerrainData().GetTerrainType() == TileNode.TerrainType.mountain)
-                {
-                    mountainRanges.Add(BuildGroupOfMatchingTiles(checkedTiles, node, false));
-                }
-
-                else
-                {
-                    checkedTiles.Add(node);
-                }
-            }
-        }
-        
-        return mountainRanges;
-    }
-
-    private List<TileNode> DrawRiverFromMountain(List<TileNode> mountainRange, List<TileNode> ocean)
-    {
-        Vector3 center = FindCenterOfMountainRange(mountainRange);
-        TileNode closestOceanTile = FindClosestTile(ocean, center);
-
-        TileNode destinationTile = null;
-        foreach(TileNode neighbor in closestOceanTile.GetNodeNeighborData().GetNeighbors())
-        {
-            if (!neighbor.GetNodeTerrainData().IsNodeOcean())
-            {
-                destinationTile = neighbor;
-                break;
-            }
-        }
-
-        if(destinationTile == null)
-        {
-            Debug.LogError("DrawRiverFromMountain Returned an ocean tile that doesn't border land");
-        }
-
-        
-
-        TileNode startingTile = FindClosestTile(mountainRange, destinationTile.GetCoordinates());
-
-        if(startingTile == destinationTile)
-        {
-            return null;
-        }
-        
-        return Pathfinding.Singleton.FindPath(startingTile.GetCoordinates(), destinationTile.GetCoordinates());
-    }
-
-    private Vector3 FindCenterOfMountainRange(List<TileNode> mountainRange)
-    {
-        Vector3 center = Vector3.zero;
-        foreach(TileNode node in mountainRange)
-        {
-            center += node.GetCoordinates();
-        }
-        center = new Vector3(center.x / mountainRange.Count, center.y / mountainRange.Count, 0);
-        return center;
-    }
-
-    private TileNode FindClosestTile(List<TileNode> tileNodes, Vector3 origin)
-    {
-        float distanceToTile = 10000;
-        TileNode closestTile = null;
-        foreach (TileNode node in tileNodes)
-        {
-            float distance = Vector3.Distance(origin, node.GetCoordinates());
-            if (distance < distanceToTile)
-            {
-                closestTile = node;
-                distanceToTile = distance;
-            }
-        }
-
-        return closestTile;
-    }
-
-    private List<RiverNode> PlaceRiverTiles(List<TileNode> river, Transform parent)
-    {
-        List<RiverNode> riverNodes = new List<RiverNode>();
-        for(int i = 0; i < river.Count; i++)
-        {
-            GameObject riverTile = Instantiate(riverNode.gameObject, nodeManager.GetWorldPostitionFromTileNode(river[i]), Quaternion.identity, parent);
-            RiverNode node = riverTile.GetComponent<RiverNode>();
-            riverNodes.Add(node);
-        }
-        return riverNodes;
-    }
+    
 
     private void PlaceTileCoordinateLabel(Vector3Int coordinate)
     {
@@ -431,48 +75,7 @@ public class MapCreator : MonoBehaviour
         label.text = ((Vector2Int)coordinate).ToString();
     }
 
-    private void CreateRegions()
-    {
-        IterateThroughAllTiles(MapOperation_CreateRegions, null, null);
-        regionManager.DisolveExtraRegions();
-        regionManager.ShrinkTooLargeRgeions();
-    }
-
-    private void MapOperation_CreateRegions(int x, int y, float[,] noiseMap, float[] terrainThreshholds)
-    {
-        TileNode node = nodeManager.GetTileNode(new Vector3Int(x, y, 0));
-        if (node.GetNodeTerrainData().IsNodeOcean())
-        {
-            return;
-        }
-        if (node.GetRegion() != null)
-        {
-            return;
-        }
-
-        regionManager.CreateRegion(node);
-    }
-
-    private void DrawBorders()
-    {
-        IterateThroughAllTiles(MapOperation_DrawBorders, null, null);
-    }
-
-    private void MapOperation_DrawBorders(int x, int y, float[,] noiseMap, float[] terrainThreshholds)
-    {
-        Vector3Int coordinates = new Vector3Int(x, y, 0);
-        TileNode node = nodeManager.GetTileNode(coordinates);
-
-        if (node.GetNodeTerrainData().GetTerrainType() == TileNode.TerrainType.ocean)
-        {
-            return;
-        }
-
-        if (node.IsBorderTile())
-        {
-            regionManager.DrawBorders(coordinates);
-        }
-    }
+    
 
     private void PlaceSettlements()
     {

@@ -10,6 +10,7 @@ public class NodeManager : MonoBehaviour
     
     [SerializeField] Tilemap tileMap;
     [SerializeField] TileStorage tileStorage;
+    [SerializeField] RiverNode riverNode;
 
     private List<TileNode> tileNodes = new List<TileNode> ();
     private List<List<Tile>> tiles;
@@ -82,6 +83,12 @@ public class NodeManager : MonoBehaviour
         }
         tileMap.SetTile(coordinates, tiles[(int)terrainType][tileNode.GetNodeTerrainData().GetForestLevel()]);
 
+    }
+
+    public RiverNode PlaceRiverNode(TileNode tileNode, Transform parent)
+    {
+        GameObject riverTile = Instantiate(riverNode.gameObject, GetWorldPostitionFromTileNode(tileNode), Quaternion.identity, parent);
+        return riverTile.GetComponent<RiverNode>();
     }
 
     public TileNode GetTileNode(Vector3Int coordinates)

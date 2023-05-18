@@ -543,6 +543,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileMap: {fileID: 1471851745}
   tileStorage: {fileID: 454916006}
+  riverNode: {fileID: 8887259246146747915, guid: 21aa435a932109041bc8682c217dd9b4, type: 3}
 --- !u!114 &454916006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1036,6 +1037,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1277696883}
   - component: {fileID: 1277696882}
+  - component: {fileID: 1277696884}
   m_Layer: 0
   m_Name: Map Creator
   m_TagString: Untagged
@@ -1075,6 +1077,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1277696884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277696881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8627e240d5e0e429ace7f8221e284c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1287272435
 GameObject:
   m_ObjectHideFlags: 0

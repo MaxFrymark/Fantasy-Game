@@ -4,29 +4,26 @@ using UnityEngine;
 
 public abstract class GenerateTerrainWithNoiseMap : MapGenerationStage
 {
-    protected int mapWidth;
-    protected int mapHeight;
-    
     protected int numberOfNoiseLayers;
     protected float frequencyMin;
     protected float frequencyMax;
+    protected float[] terrainThreshholds;
 
-    public void SetNoiseMapParameters(int mapWidth, int mapHeight, int numberOfNoiseLayers, float frequencyMin, float frequencyMax)
+    public GenerateTerrainWithNoiseMap(int mapWidth, int mapHeight, int numberOfNoiseLayers, float frequencyMin, float frequencyMax, float[] terrainThreshholds) : base(mapWidth, mapHeight)
     {
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
         this.numberOfNoiseLayers = numberOfNoiseLayers;
         this.frequencyMin = frequencyMin;
         this.frequencyMax = frequencyMax;
+        this.terrainThreshholds = terrainThreshholds;
     }
     
-    protected List<NoiseWave> GenerateNoiseWaves(int noiseLayers, float frequencyMin, float frequencyMax)
+    protected List<NoiseWave> GenerateNoiseWaves()
     {
         List<NoiseWave> noiseWaves = new List<NoiseWave>();
-        for (int i = 0; i < noiseLayers; i++)
+        for (int i = 0; i < numberOfNoiseLayers; i++)
         {
             float frequency = Random.Range(frequencyMin, frequencyMax);
-            NoiseWave wave = new NoiseWave(Random.Range(0, 500), frequency, (float)i / noiseLayers);
+            NoiseWave wave = new NoiseWave(Random.Range(0, 500), frequency, (float)i / numberOfNoiseLayers);
             noiseWaves.Add(wave);
         }
 
