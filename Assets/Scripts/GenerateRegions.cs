@@ -9,6 +9,7 @@ public class GenerateRegions : MapGenerationStage
     public GenerateRegions(int mapWidth, int mapHeight) : base(mapWidth, mapHeight)
     {
         regionManager = GameObject.FindObjectOfType<RegionManager>();
+        description = "Generating Regions.";
     }
 
     public override void GenerateMap()

@@ -7,7 +7,7 @@ public class GenerateMountains : GenerateTerrainWithNoiseMap
     public GenerateMountains(int mapWidth, int mapHeight, int numberOfNoiseLayers, float frequencyMin, float frequencyMax, float[] terrainThreshholds)
         : base(mapWidth, mapHeight, numberOfNoiseLayers, frequencyMin, frequencyMax, terrainThreshholds)
     {
-
+        description = "Generating Mountains";
     }
 
     public override void GenerateMap()

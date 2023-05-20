@@ -24,7 +24,7 @@ public class TileNode
 
         pathFindingData = new NodePathFindingData();
         neighborData = new NodeNeighborData(this);
-        terrainData = new NodeTerrainData();
+        terrainData = new NodeTerrainData(this);
         terrainData.SetTerrainType(terrainType);
     }
 
@@ -56,6 +56,10 @@ public class TileNode
     public void SetBuilding(TileBuilding building)
     {
         this.building = building;
+        if(building is Settlement)
+        {
+            terrainData.RemoveForest();
+        }
     }
 
     public TileBuilding GetBuilding()
@@ -352,14 +356,16 @@ public class NodeNeighborData
 
 public class NodeTerrainData
 {
+    TileNode parentNode;
     RiverNode[] riverBorders;
     int forestLevel = 0;
 
     TerrainType terrainType;
 
-    public NodeTerrainData()
+    public NodeTerrainData(TileNode parentNode)
     {
         riverBorders = new RiverNode[6];
+        this.parentNode = parentNode;
     }
 
 
@@ -390,6 +396,16 @@ public class NodeTerrainData
     public void ChangeForestLevel(int forrestAdjustment)
     {
         forestLevel += forrestAdjustment;
+    }
+
+    public void RemoveForest()
+    {
+        if(forestLevel > 0)
+        {
+            ChangeForestLevel(-1);
+            RemoveForest();
+        }
+        parentNode.GetNodeManager().UpdadateNodeOnTileMap(parentNode);
     }
 
     public bool IsNodeOcean()

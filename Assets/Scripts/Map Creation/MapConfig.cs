@@ -4,24 +4,19 @@ using UnityEngine;
 
 public class MapConfig : MonoBehaviour
 {
-    GenerateLandmass generateLandmass;
-    GenerateMountains generateMountains;
-    GenerateRivers generateRivers;
-    GenerateForests generateForests;
-    GenerateRegions generateRegions;
-
     int mapWidth = 30;
     int mapHeight = 30;
     
     void Start()
     {
-        generateLandmass = new GenerateSingleContinent(mapWidth, mapHeight, 2f, 2, 0.01f, 0.02f, new float[1] {0.1f});
-        generateMountains = new GenerateMountains(mapWidth, mapHeight, 2, 0.2f, 0.3f, new float[2] { 0.75f, 0.55f });
-        generateRivers = new GenerateRivers(mapWidth, mapHeight);
-        generateForests = new GenerateForests(mapWidth, mapHeight, 2, 0.1f, 0.2f, new float[2] { 0.65f, 0.45f });
-        generateRegions = new GenerateRegions(mapWidth, mapHeight);
+        List<MapGenerationStage> stages = new List<MapGenerationStage>();
+        stages.Add(new GenerateSingleContinent(mapWidth, mapHeight, 2f, 2, 0.05f, 0.2f, new float[1] {0.1f}));
+        stages.Add(new GenerateMountains(mapWidth, mapHeight, 2, 0.2f, 0.3f, new float[2] { 0.75f, 0.55f }));
+        stages.Add(new GenerateRivers(mapWidth, mapHeight));
+        stages.Add(new GenerateForests(mapWidth, mapHeight, 2, 0.1f, 0.3f, new float[2] { 0.7f, 0.5f }));
+        stages.Add(new GenerateRegions(mapWidth, mapHeight));
 
-        FindObjectOfType<MapCreator>().SetMapGenerationStages(generateLandmass, generateMountains, generateRivers, generateForests, generateRegions);
+        FindObjectOfType<MapCreator>().SetMapGenerationStages(stages);
     }
 
 }

@@ -9,7 +9,8 @@ public abstract class GenerateLandmass : GenerateTerrainWithNoiseMap
     public GenerateLandmass(int mapWidth, int mapHeight, float positionModifierExponent, int numberOfNoiseLayers, float frequencyMin, float frequencyMax, float[] terrainThreshholds) 
         : base(mapWidth, mapHeight, numberOfNoiseLayers, frequencyMin, frequencyMax, terrainThreshholds)
     {
-       this.positionModiferExponent = positionModifierExponent;
+        this.positionModiferExponent = positionModifierExponent;
+        description = "Generating Land.";
     }
 
     

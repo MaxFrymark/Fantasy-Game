@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static TileNode;
 
 public class NodeManager : MonoBehaviour
 {
@@ -81,8 +82,14 @@ public class NodeManager : MonoBehaviour
         {
             tileNode.GetNodeTerrainData().SetTerrainType(terrainType);
         }
-        tileMap.SetTile(coordinates, tiles[(int)terrainType][tileNode.GetNodeTerrainData().GetForestLevel()]);
+        
+        UpdadateNodeOnTileMap(tileNode);
+    }
 
+    public void UpdadateNodeOnTileMap(TileNode node)
+    {
+        NodeTerrainData terrainData = node.GetNodeTerrainData();
+        tileMap.SetTile(node.GetCoordinates(), tiles[(int)terrainData.GetTerrainType()][terrainData.GetForestLevel()]);
     }
 
     public RiverNode PlaceRiverNode(TileNode tileNode, Transform parent)

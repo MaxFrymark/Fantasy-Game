@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class GenerateForests : GenerateTerrainWithNoiseMap
 {
+    
+    
     public GenerateForests(int mapWidth, int mapHeight, int numberOfNoiseLayers, float frequencyMin, float frequencyMax, float[] terrainThreshholds)
         : base(mapWidth, mapHeight, numberOfNoiseLayers, frequencyMin, frequencyMax, terrainThreshholds)
     {
-
+        description = "Generating Forests";
     }
 
     public override void GenerateMap()

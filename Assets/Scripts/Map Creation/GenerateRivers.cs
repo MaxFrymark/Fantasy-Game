@@ -6,7 +6,7 @@ public class GenerateRivers : MapGenerationStage
 {
     public GenerateRivers(int mapWidth, int mapHeight) : base(mapWidth, mapWidth)
     {
-
+        description = "Generating Rivers.";
     }
 
     public override void GenerateMap()

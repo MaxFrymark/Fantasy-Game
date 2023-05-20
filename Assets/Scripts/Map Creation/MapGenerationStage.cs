@@ -8,6 +8,8 @@ public abstract class MapGenerationStage
     protected int mapHeight;
     protected float positionModiferExponent;
 
+    protected string description;
+
     protected delegate void OperateOnTile(int x, int y, float[,] noiseMap, float[] terrainThreshholds);
 
     public MapGenerationStage(int mapWidth, int mapHeight)
@@ -17,6 +19,11 @@ public abstract class MapGenerationStage
     }
 
     public abstract void GenerateMap();
+
+    public string GetDescription()
+    {
+        return description;
+    }
     
     protected void IterateThroughAllTiles(OperateOnTile operateOnTile, float[,] noiseMap, float[] terrainThreshholds)
     {
