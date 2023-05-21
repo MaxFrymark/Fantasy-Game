@@ -16,6 +16,7 @@ public class GenerateRegions : MapGenerationStage
     {
         CreateRegions();
         DrawBorders();
+        BuildRegionNeighborLists();
     }
 
     private void CreateRegions()
@@ -59,5 +60,10 @@ public class GenerateRegions : MapGenerationStage
         {
             regionManager.DrawBorders(coordinates);
         }
+    }
+
+    private void BuildRegionNeighborLists()
+    {
+        regionManager.BuildRegionNeighborLists();
     }
 }

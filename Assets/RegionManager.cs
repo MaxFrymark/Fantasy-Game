@@ -282,44 +282,177 @@ public class RegionManager : MonoBehaviour
         return true;
     }
 
+    public void BuildRegionNeighborLists()
+    {
+        foreach(Region region in regions)
+        {
+            region.FindNeighboringRegions();
+        }
+    }
+
     public void PlaceSettlements()
     {
-        List<Region> occupiedRegions = new List<Region>();
-        FactionCreator factionCreator = new FactionCreator();
-        for(int i = 0; i < numberOfCities; i++)
-        {
-            occupiedRegions.Add(PlaceCity(occupiedRegions, factionCreator));
-        }
+        PlaceCities();
 
         foreach(Region region in regions)
         {
-            if (!occupiedRegions.Contains(region))
+            if (region.GetSettlement() == null)
             {
                 Village newVillage = Instantiate(village);
-                newVillage.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(region.SetSettlement(newVillage));
-                newVillage.SetName(CityNameGenerator.Instance.GetRandomCityName());
-                occupiedRegions.Add(region);
+                TileNode node = region.SetSettlement(newVillage);
+                if (node == null)
+                {
+                    Destroy(newVillage.gameObject);
+                }
+
+                else
+                {
+                    newVillage.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(node);
+                    newVillage.SetName(CityNameGenerator.Instance.GetRandomCityName());
+                }
             }
         }
     }
 
-    public Region PlaceCity(List<Region> occupiedRegions, FactionCreator factionCreator)
+    private void PlaceCities()
     {
-        Region region = regions[Random.Range(0, regions.Count)];
-        if (occupiedRegions.Contains(region))
+        List<List<Region>> regionClusters = BuildRegionClusters();
+        FactionCreator factionCreator = new FactionCreator();
+        foreach(List<Region> regionCluster in regionClusters)
         {
-            return PlaceCity(occupiedRegions, factionCreator);
+            PlaceCity(FindRegionWithinCluster(regionCluster, regionClusters), factionCreator);
+        }
+    }
+
+    private List<List<Region>> BuildRegionClusters()
+    {
+        int regionClusterSize = regions.Count / numberOfCities;
+        List<List<Region>> regionClusters = new List<List<Region>>();
+        for(int i = 0; i < numberOfCities; i++)
+        {
+            regionClusters.Add(new List<Region>());
+        }
+
+        for(int i = 0; i < numberOfCities; i++)
+        {
+            regionClusters[i].Add(GetNextRegionNotInCluster(regionClusters));
+            BuildRegionCluster(regionClusters[i], regionClusterSize, regionClusters);
+        }
+
+        return regionClusters;
+    }
+
+    private Region GetNextRegionNotInCluster(List<List<Region>> regionClusters)
+    {
+        foreach(Region region in regions)
+        {
+            //Debug.Log("Sent From Get Next Region");
+            if (!CheckIfRegionIsInCluster(region, regionClusters))
+            {
+                return region;
+            }
+        }
+
+        Debug.LogError("Problem Getting Region Clusters");
+        return null;
+    }
+
+    private bool CheckIfRegionIsInCluster(Region region, List<List<Region>> regionClusters)
+    {
+        //Debug.Log("hi");
+        bool regionAlredyInCluster = false;
+        for (int i = 0; i < regionClusters.Count; i++)
+        {
+            if (regionClusters[i].Contains(region))
+            {
+                regionAlredyInCluster = true;
+            }
+        }
+        //Debug.Log("Region in Cluster: " + regionAlredyInCluster);
+        return regionAlredyInCluster;
+    }
+
+    private void BuildRegionCluster(List<Region> regionCluster, int regionClusterSize, List<List<Region>> regionClusters)
+    {
+        int regionsAdded = 0;
+        Region region = regionCluster[regionCluster.Count - 1];
+        foreach(Region neighbor in region.neighbors)
+        {
+            //Debug.Log("Sent From Build Region");
+            if(!CheckIfRegionIsInCluster(neighbor, regionClusters))
+            {
+                regionCluster.Add(neighbor);
+                regionsAdded++;
+                if (regionCluster.Count >= regionClusterSize)
+                {
+                    Debug.Log("Cluster At full size");
+                    return;
+                }
+            }
+        }
+        if(regionsAdded == 0)
+        {
+            //Debug.Log("No Regions Added");
+            return;
+        }
+        Debug.Log("Function recurs");
+        BuildRegionCluster(regionCluster, regionClusterSize, regionClusters);
+    }
+
+    private Region FindRegionWithinCluster(List<Region> regionCluster, List<List<Region>> regionClusters)
+    {
+        List<Region> regionsThatDoNotBorderOtherClusters = new List<Region>();
+
+        foreach(Region region in regionCluster)
+        {
+            bool regionBordersAnotherCluster = false;
+
+            foreach(Region neighbor in region.neighbors)
+            {
+                if (regionBordersAnotherCluster)
+                {
+                    continue;
+                }
+
+                foreach(List<Region> neighboringCluster in regionClusters)
+                {
+                    if(neighboringCluster == regionCluster)
+                    {
+                        continue;
+                    }
+
+                    if (neighboringCluster.Contains(neighbor))
+                    {
+                        regionBordersAnotherCluster = true;
+                        continue;
+                    }
+                }
+            }
+
+            if (!regionBordersAnotherCluster)
+            {
+                regionsThatDoNotBorderOtherClusters.Add(region);
+            }
+        }
+
+        if(regionsThatDoNotBorderOtherClusters.Count > 0)
+        {
+            return regionsThatDoNotBorderOtherClusters[Random.Range(0, regionsThatDoNotBorderOtherClusters.Count)];
         }
         else
         {
-            City newCity = Instantiate(city);
-            newCity.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(region.SetSettlement(newCity));
-            newCity.SetName(CityNameGenerator.Instance.GetRandomCityName());
-            Faction faction = factionCreator.CreateFaction(newCity);
-            newCity.SetCityFlagColor(faction.GetFactionColor());
-            region.SetOwner(faction);
-            return region;
+            return regionCluster[Random.Range(0, regionCluster.Count)];
         }
+    }
+
+    private void PlaceCity(Region region, FactionCreator factionCreator)
+    {
+        City newCity = Instantiate(city);
+        newCity.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(region.SetSettlement(newCity));
+        newCity.SetName(CityNameGenerator.Instance.GetRandomCityName());
+        Faction faction = factionCreator.CreateFaction(newCity);
+        newCity.SetCityFlagColor(faction.GetFactionColor());
+        region.SetOwner(faction);
     }
 }
 
@@ -353,9 +486,28 @@ public class Region
     public TileNode SetSettlement(Settlement settlement)
     {
         this.settlement = settlement;
-        TileNode node = tilesInRegion[Random.Range(0, tilesInRegion.Count)];
-        node.SetBuilding(settlement);
-        return node;
+        List<TileNode> nodes = new List<TileNode>();
+        foreach (TileNode n in tilesInRegion)
+        {
+            NodeTerrainData terrainData = n.GetNodeTerrainData();
+            if (terrainData.GetTerrainType() != TileNode.TerrainType.mountain)
+            {
+                nodes.Add(n);
+            }
+        }
+
+        if (nodes.Count > 0)
+        {
+            TileNode node = nodes[Random.Range(0, nodes.Count)];
+            node.SetBuilding(settlement);
+            return node;
+        }
+
+        else
+        {
+            Debug.LogError("Region entirely mountains.");
+            return null;
+        }
     }
 
     public Settlement GetSettlement()
@@ -365,6 +517,7 @@ public class Region
 
     public void FindNeighboringRegions()
     {
+        neighbors = new List<Region>();
         foreach(TileNode tileNode in tilesInRegion)
         {
             if (tileNode.IsBorderTile())
