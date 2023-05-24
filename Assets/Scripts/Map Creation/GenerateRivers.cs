@@ -140,7 +140,8 @@ public class GenerateRivers : MapGenerationStage
             return null;
         }
 
-        return Pathfinding.Singleton.FindPath(startingTile.GetCoordinates(), destinationTile.GetCoordinates());
+        RiverPathfinding pathfinding = new RiverPathfinding();
+        return pathfinding.FindPath(startingTile.GetCoordinates(), destinationTile.GetCoordinates());
     }
 
     private Vector3 FindCenterOfMountainRange(List<TileNode> mountainRange)

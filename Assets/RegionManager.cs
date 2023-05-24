@@ -16,6 +16,7 @@ public class RegionManager : MonoBehaviour
     int minimumRegionSize = 7;
     int maximumRegionSize = 12;
 
+    int numberOfPlayerFactions = 2;
     int numberOfCities = 6;
 
     public void CreateRegion(TileNode startingNode)
@@ -385,7 +386,7 @@ public class RegionManager : MonoBehaviour
                 regionsAdded++;
                 if (regionCluster.Count >= regionClusterSize)
                 {
-                    Debug.Log("Cluster At full size");
+                    //Debug.Log("Cluster At full size");
                     return;
                 }
             }
@@ -395,7 +396,7 @@ public class RegionManager : MonoBehaviour
             //Debug.Log("No Regions Added");
             return;
         }
-        Debug.Log("Function recurs");
+        //Debug.Log("Function recurs");
         BuildRegionCluster(regionCluster, regionClusterSize, regionClusters);
     }
 
@@ -450,7 +451,16 @@ public class RegionManager : MonoBehaviour
         City newCity = Instantiate(city);
         newCity.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(region.SetSettlement(newCity));
         newCity.SetName(CityNameGenerator.Instance.GetRandomCityName());
-        Faction faction = factionCreator.CreateFaction(newCity);
+        Faction faction;
+        if(numberOfPlayerFactions > 0)
+        {
+            faction = factionCreator.CreatePlayerFaction(newCity);
+            numberOfPlayerFactions--;
+        }
+        else
+        {
+            faction = factionCreator.CreateAIFaction(newCity);
+        }
         newCity.SetCityFlagColor(faction.GetFactionColor());
         region.SetOwner(faction);
     }

@@ -11,9 +11,16 @@ public class FactionCreator
         factionColors = new List<Color>() { Color.red, Color.blue, Color.green, Color.yellow, Color.cyan, Color.magenta };
     }
 
-    public Faction CreateFaction(City city)
+    public PlayerFaction CreatePlayerFaction(City city)
     {
-        Faction faction = new Faction(city, factionColors[0]);
+        PlayerFaction faction = new PlayerFaction(city, factionColors[0]);
+        factionColors.RemoveAt(0);
+        return faction;
+    }
+
+    public AIFaction CreateAIFaction(City city)
+    {
+        AIFaction faction = new AIFaction(city, factionColors[0]);
         factionColors.RemoveAt(0);
         return faction;
     }
