@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class Faction
 {
-    TurnManager turnManager;
+    protected TurnManager turnManager;
     City capitolCity;
     List<Region> territory;
     string factionName;
@@ -25,8 +25,18 @@ public abstract class Faction
         return factionColor;
     }
 
+    public string GetFactionName()
+    {
+        return factionName;
+    }
+
     public abstract void EndFactionTurn();
     public abstract void ResetTurn();
+
+    protected void SendCommand(Command command)
+    {
+        turnManager.AddCommandToQueue(command);
+    }
 }
 
 public class PlayerFaction : Faction
@@ -40,20 +50,36 @@ public class PlayerFaction : Faction
         return hasEndedTurn;
     }
 
+    public void ReceiveCommandFromInput(Command command)
+    {
+        SendCommand(command);
+    }
+
     public override void EndFactionTurn()
     {
         hasEndedTurn = true;
+        turnManager.EndTurn();
     }
 
     public override void ResetTurn()
     {
-        hasEndedTurn = true;
+        hasEndedTurn = false;
     }
 }
 
 public class AIFaction : Faction
 {
-    public AIFaction(City capitolCity, Color factionColor) : base(capitolCity, factionColor)    {    }
+    private AI ai;
+    
+    public AIFaction(City capitolCity, Color factionColor) : base(capitolCity, factionColor) 
+    {
+        ai = new AI(this);
+    }
+
+    public void ReceiveCommandFromAI(Command command)
+    {
+        SendCommand(command);
+    }
 
     public override void EndFactionTurn()
     {
@@ -62,7 +88,7 @@ public class AIFaction : Faction
 
     public override void ResetTurn()
     {
-        throw new System.NotImplementedException();
+        ai.GenerateCommandsForFaction();
     }
 }
 

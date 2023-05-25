@@ -9,6 +9,13 @@ public class TurnManager : MonoBehaviour
     List<Command> commandQueue = new List<Command>();
     List<Faction> factions = new List<Faction>();
 
+    private void Start()
+    {
+        //ResetTurn();
+        EndTurn();
+        Debug.Log("Turn: " + currentTurnNumber);
+    }
+
     public void AddFaction(Faction faction)
     {
         factions.Add(faction);
@@ -21,6 +28,7 @@ public class TurnManager : MonoBehaviour
             return;
         }
         ExecuteAllCommands();
+        CleanUpCommandQueue();
         ResetTurn();
     }
 
@@ -33,12 +41,17 @@ public class TurnManager : MonoBehaviour
                 PlayerFaction playerFaction = (PlayerFaction)faction;
                 if (!playerFaction.GetHasEndedTurn())
                 {
-                    inputHandler.SetActionPlayerFaction(playerFaction);
+                    inputHandler.SetActivePlayerFaction(playerFaction);
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    public void AddCommandToQueue(Command command)
+    {
+        commandQueue.Add(command);
     }
 
     private void ExecuteAllCommands()
@@ -48,12 +61,32 @@ public class TurnManager : MonoBehaviour
             command.ExecuteCommand();
         }
     }
+
+    private void CleanUpCommandQueue()
+    {
+        for(int i = commandQueue.Count - 1; i >= 0; i--)
+        {
+            if (commandQueue[i].GetCommandComplete())
+            {
+                commandQueue.RemoveAt(i);
+            }
+        }
+    }
+
     private void ResetTurn()
     {
+        PlayerFaction firstPlayer = null;
         foreach(Faction faction in factions)
         {
             faction.ResetTurn();
+            if(faction is PlayerFaction && firstPlayer == null)
+            {
+                firstPlayer = faction as PlayerFaction;
+                inputHandler.SetActivePlayerFaction(firstPlayer);
+            }
         }
         currentTurnNumber++;
+        Debug.Log("Turn: " + currentTurnNumber);
+
     }
 }

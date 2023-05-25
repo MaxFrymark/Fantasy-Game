@@ -6,8 +6,22 @@ public class InputHandler : MonoBehaviour
 {
     PlayerFaction activePlayerFaction;
 
-    public void SetActionPlayerFaction(PlayerFaction playerFaction)
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            activePlayerFaction.ReceiveCommandFromInput(new TestCommand(activePlayerFaction));
+        }
+    }
+
+    public void SetActivePlayerFaction(PlayerFaction playerFaction)
     {
         activePlayerFaction = playerFaction;
+        Debug.Log("Player " + playerFaction.GetFactionName() + " is active.");
+    }
+
+    public void PlayerEndedTurn()
+    {
+        activePlayerFaction.EndFactionTurn();
     }
 }
