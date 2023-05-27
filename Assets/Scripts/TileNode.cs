@@ -33,6 +33,11 @@ public class TileNode
         return coordinates;
     }
 
+    public Vector3 GetWorldPosition()
+    {
+        return nodeManager.GetWorldPostitionFromTileNode(this);
+    }
+
     public NodePathFindingData GetNodePathFindingData()
     {
         return pathFindingData;

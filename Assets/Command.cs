@@ -34,3 +34,28 @@ public class TestCommand : Command
         FinishCommand();
     }
 }
+
+public class TestCommandWithTimer : Command
+{
+    private Faction sendingFaction;
+    int duration = 2;
+
+    public TestCommandWithTimer(Faction faction)
+    {
+        sendingFaction = faction;
+    }
+
+    public override void ExecuteCommand()
+    {
+        if(duration > 0)
+        {
+            Debug.Log(sendingFaction.GetFactionName() + " timed command. Remaining duration: " + duration);
+            duration--;
+        }
+        else
+        {
+            Debug.Log(sendingFaction.GetFactionName() + " timed command complete.");
+            FinishCommand();
+        }
+    }
+}

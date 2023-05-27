@@ -132,6 +132,22 @@ public class NodeManager : MonoBehaviour
     {
         return tileMap.GetCellCenterWorld(node.GetCoordinates());
     }
+
+    public TileNode FindClosestNodeToWorldPostition(Vector3 worldPosition)
+    {
+        float shortestDistance = 10000;
+        TileNode closestNode = null;
+        foreach(TileNode node in tileNodes)
+        {
+            float distance = Vector2.Distance(worldPosition, tileMap.GetCellCenterWorld(node.GetCoordinates()));
+            if(distance < shortestDistance)
+            {
+                closestNode = node;
+                shortestDistance = distance;
+            }
+        }
+        return closestNode;
+    }
 }
 
 

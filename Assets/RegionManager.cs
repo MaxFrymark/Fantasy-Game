@@ -16,7 +16,7 @@ public class RegionManager : MonoBehaviour
     int minimumRegionSize = 7;
     int maximumRegionSize = 12;
 
-    int numberOfPlayerFactions = 2;
+    int numberOfPlayerFactions = 1;
     int numberOfCities = 6;
 
     public void CreateRegion(TileNode startingNode)
