@@ -7,6 +7,11 @@ public class BuildingPlacer : MonoBehaviour
     [SerializeField] SpriteRenderer spriteRenderer;
 
 
+    public void SetSprite(Sprite sprite)
+    {
+        spriteRenderer.sprite = sprite;
+    }
+    
     public void FindValidBuildingPlacement(TileNode tileNode, bool validPlacement)
     {
         transform.position = tileNode.GetWorldPosition();

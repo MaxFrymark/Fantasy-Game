@@ -132,3 +132,4 @@ MonoBehaviour:
   constructionTime: 3
   validTerrain: 0100000003000000
   validForest: 00000000
+  blankSprite: {fileID: 21300000, guid: 674486f53968a93459ae854b99011d86, type: 3}

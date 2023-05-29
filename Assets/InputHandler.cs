@@ -13,9 +13,11 @@ public class InputHandler : MonoBehaviour
     private delegate void MouseAction();
     private MouseAction mouseAction;
 
-    [SerializeField] Farm farmPrefab;
-    [SerializeField] BuildingUnderConstruction farmUnderConstructionPrefab;
-    [SerializeField] BuildingPlacer farmPlacerPrefab;
+    [SerializeField] List<TileBuilding> buildingPrefabs;
+    TileBuilding activeBuildingPrefab;
+
+    [SerializeField] BuildingUnderConstruction buildingUnderConstructionPrefab;
+    [SerializeField] BuildingPlacer buildingPlacerPrefab;
 
     BuildingPlacer buildingPlacer;
     TileBuilding tempBuilding;
@@ -60,23 +62,28 @@ public class InputHandler : MonoBehaviour
         return nodeManager.FindClosestNodeToWorldPostition(mousePosition);
     }
 
-    public void SetToBuildBuilding()
+    public void SetToBuildBuilding(int index)
     {
+        activeBuildingPrefab = buildingPrefabs[index];
+
         mouseAction = BuildBuilding;
         readingMouse = true;
     }
 
     private void BuildBuilding()
     {
-        if(buildingPlacer == null)
+        if (tempBuilding == null)
         {
-            buildingPlacer = Instantiate(farmPlacerPrefab);
+            tempBuilding = Instantiate(activeBuildingPrefab, new Vector3(1000, 0, 0), Quaternion.identity);
         }
 
-        if(tempBuilding == null)
+        if (buildingPlacer == null)
         {
-            tempBuilding = Instantiate(farmPrefab, new Vector3(1000, 0, 0), Quaternion.identity);
+            buildingPlacer = Instantiate(buildingPlacerPrefab);
+            buildingPlacer.SetSprite(tempBuilding.GetBlankSprite());
         }
+
+        
         TileNode currentNode = FindMousePosition();
         bool validPlacement = ValidatePlacement(currentNode);
         buildingPlacer.FindValidBuildingPlacement(currentNode, validPlacement);
@@ -85,7 +92,9 @@ public class InputHandler : MonoBehaviour
         {
             if (validPlacement)
             {
-                BuildingUnderConstruction buildingUnderConstruction = Instantiate(farmUnderConstructionPrefab, buildingPlacer.transform.position, Quaternion.identity);
+                BuildingUnderConstruction buildingUnderConstruction = Instantiate(buildingUnderConstructionPrefab, buildingPlacer.transform.position, Quaternion.identity);
+                buildingUnderConstruction.SetSprite(tempBuilding.GetBlankSprite());
+                buildingUnderConstruction.UpdateBuildingCountDown(tempBuilding.GetConstructionTime());
                 Destroy(buildingPlacer.gameObject);
                 activePlayerFaction.ReceiveCommandFromInput(new BuildBuildingCommand(buildingUnderConstruction, tempBuilding.gameObject, tempBuilding.GetConstructionTime()));
                 tempBuilding.gameObject.SetActive(false);
@@ -105,6 +114,6 @@ public class InputHandler : MonoBehaviour
 
     private bool ValidatePlacement(TileNode currentNode)
     {
-        return tempBuilding.CheckIfTerrainValid(currentNode.GetNodeTerrainData()) && currentNode.GetRegion().GetOwner() == activePlayerFaction;
+        return tempBuilding.CheckIfTerrainValid(currentNode.GetNodeTerrainData()) && currentNode.GetRegion().GetOwner() == activePlayerFaction && currentNode.GetBuilding() == null;
     }
 }

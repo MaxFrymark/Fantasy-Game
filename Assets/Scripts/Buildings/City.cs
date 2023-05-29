@@ -11,8 +11,4 @@ public class City : Settlement
         cityFlag.color = color;
     }
 
-    public override void ActivateBuilding()
-    {
-        
-    }
 }

@@ -9,6 +9,8 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
     [SerializeField] List<TileNode.TerrainType> validTerrain;
     [SerializeField] List<int> validForest;
 
+    [SerializeField] Sprite blankSprite;
+
     TileNode homeTile;
     Region homeRegion;
 
@@ -26,7 +28,7 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
         return homeRegion;
     }
 
-    public void AssigneHomeTile(TileNode homeTile)
+    public void AssignHomeTile(TileNode homeTile)
     {
         this.homeTile = homeTile;
     }
@@ -36,6 +38,14 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
         return validTerrain.Contains(terrain.GetTerrainType()) && validForest.Contains(terrain.GetForestLevel());
     }
 
-    public abstract void ActivateBuilding();
+    public Sprite GetBlankSprite()
+    {
+        return blankSprite;
+    }
+
+    public virtual void ActivateBuilding()
+    {
+
+    }
     
 }
