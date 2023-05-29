@@ -553,6 +553,11 @@ public class Region
         }
     }
 
+    public Faction GetOwner()
+    {
+        return owner;
+    }
+
     public void AddBorderToBorderList(RegionBorder regionBorder)
     {
         borders.Add(regionBorder);

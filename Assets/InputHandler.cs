@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class InputHandler : MonoBehaviour
@@ -12,10 +13,12 @@ public class InputHandler : MonoBehaviour
     private delegate void MouseAction();
     private MouseAction mouseAction;
 
-    [SerializeField] GameObject farmPrefab;
+    [SerializeField] Farm farmPrefab;
     [SerializeField] BuildingUnderConstruction farmUnderConstructionPrefab;
     [SerializeField] BuildingPlacer farmPlacerPrefab;
+
     BuildingPlacer buildingPlacer;
+    TileBuilding tempBuilding;
 
     private void Start()
     {
@@ -28,6 +31,12 @@ public class InputHandler : MonoBehaviour
         {
             activePlayerFaction.ReceiveCommandFromInput(new TestCommandWithTimer(activePlayerFaction));
         }
+        /*if(Input.GetMouseButton(0))
+        {
+            TileNode node = FindMousePosition();
+            Debug.Log(node.GetNodeTerrainData().GetTerrainType());
+        }*/
+
         if (readingMouse)
         {
             mouseAction();
@@ -64,17 +73,38 @@ public class InputHandler : MonoBehaviour
             buildingPlacer = Instantiate(farmPlacerPrefab);
         }
 
-        bool validPlacement = buildingPlacer.FindValidBuildingPlacement(FindMousePosition());
-        
-        if(Input.GetMouseButtonDown(0))
+        if(tempBuilding == null)
+        {
+            tempBuilding = Instantiate(farmPrefab, new Vector3(1000, 0, 0), Quaternion.identity);
+        }
+        TileNode currentNode = FindMousePosition();
+        bool validPlacement = ValidatePlacement(currentNode);
+        buildingPlacer.FindValidBuildingPlacement(currentNode, validPlacement);
+
+        if (Input.GetMouseButtonDown(0))
         {
             if (validPlacement)
             {
-                Instantiate(farmUnderConstructionPrefab, buildingPlacer.transform.position, Quaternion.identity);
+                BuildingUnderConstruction buildingUnderConstruction = Instantiate(farmUnderConstructionPrefab, buildingPlacer.transform.position, Quaternion.identity);
                 Destroy(buildingPlacer.gameObject);
+                activePlayerFaction.ReceiveCommandFromInput(new BuildBuildingCommand(buildingUnderConstruction, tempBuilding.gameObject, tempBuilding.GetConstructionTime()));
+                tempBuilding.gameObject.SetActive(false);
                 readingMouse = false;
+                tempBuilding = null;
                 return;
             }
         }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            Destroy(tempBuilding.gameObject);
+            Destroy(buildingPlacer.gameObject);
+            readingMouse = false;
+        }
+    }
+
+    private bool ValidatePlacement(TileNode currentNode)
+    {
+        return tempBuilding.CheckIfTerrainValid(currentNode.GetNodeTerrainData()) && currentNode.GetRegion().GetOwner() == activePlayerFaction;
     }
 }

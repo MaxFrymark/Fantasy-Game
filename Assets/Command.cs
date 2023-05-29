@@ -59,3 +59,36 @@ public class TestCommandWithTimer : Command
         }
     }
 }
+
+public class BuildBuildingCommand : Command
+{
+    BuildingUnderConstruction underConstruction;
+    GameObject building;
+    int remainingTurns;
+
+    public BuildBuildingCommand(BuildingUnderConstruction underConstruction, GameObject building, int remainingTurns)
+    {
+        this.underConstruction = underConstruction;
+        this.building = building;
+        this.remainingTurns = remainingTurns;
+    }
+
+    public override void ExecuteCommand()
+    {
+        Debug.Log("Turns Remaining: " + remainingTurns);
+        
+        if(remainingTurns > 1)
+        {
+            remainingTurns--;
+            underConstruction.UpdateBuildingCountDown(remainingTurns);
+        }
+
+        else
+        {
+            building.SetActive(true);
+            building.transform.position = underConstruction.transform.position;
+            Object.Destroy(underConstruction.gameObject);
+            FinishCommand();
+        }
+    }
+}

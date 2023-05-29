@@ -100,7 +100,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4164980598925998458
 Transform:
   m_ObjectHideFlags: 0
@@ -129,3 +129,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d352565eef9c8dd408343f2eb6d4f4b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  constructionTime: 3
+  validTerrain: 0100000003000000
+  validForest: 00000000

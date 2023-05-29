@@ -68,8 +68,6 @@ public class NodeManager : MonoBehaviour
 
     public void PlaceNode(Vector3Int coordinates, TileNode.TerrainType terrainType)
     {
-
-
         TileNode tileNode = GetTileNode(coordinates);
 
         if (tileNode == null)

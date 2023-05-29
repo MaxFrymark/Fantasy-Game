@@ -288,7 +288,7 @@ Transform:
   - {fileID: 4090488066951152078}
   - {fileID: 1619416758327202311}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &536141180531663525
 MonoBehaviour:
@@ -302,5 +302,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df4886615fa8f3d44a62e25d7a43e787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingCountDown: {fileID: 0}
-  spriteRenderer: {fileID: 0}
+  buildingCountDown: {fileID: 6350077960132070187}
+  spriteRenderer: {fileID: 3443388622663621252}

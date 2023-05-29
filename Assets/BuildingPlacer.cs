@@ -7,19 +7,16 @@ public class BuildingPlacer : MonoBehaviour
     [SerializeField] SpriteRenderer spriteRenderer;
 
 
-    public bool FindValidBuildingPlacement(TileNode tileNode)
+    public void FindValidBuildingPlacement(TileNode tileNode, bool validPlacement)
     {
         transform.position = tileNode.GetWorldPosition();
-        TileNode.TerrainType terrain = tileNode.GetNodeTerrainData().GetTerrainType();
-        if(terrain == TileNode.TerrainType.ocean || terrain == TileNode.TerrainType.mountain || tileNode.GetNodeTerrainData().GetForestLevel() > 0)
+        if(validPlacement)
         {
-            spriteRenderer.color = Color.red;
-            return false;
+            spriteRenderer.color = Color.green;
         }
         else
         {
-            spriteRenderer.color = Color.green;
-            return true;
+            spriteRenderer.color = Color.red;
         }
     } 
 }

@@ -4,5 +4,8 @@ using UnityEngine;
 
 public class Village : Settlement
 {
-    
+    public override void ActivateBuilding()
+    {
+        
+    }
 }

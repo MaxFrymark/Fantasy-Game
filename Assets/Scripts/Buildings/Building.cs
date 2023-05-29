@@ -2,17 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Building : MonoBehaviour
+public interface IBuilding
 {
-    Region home;
 
-    public void AssignHomeRegion(Region home)
-    {
-        this.home = home;
-    }
+    void AssignHomeRegion(Region home);
+    Region GetHomeRegion();
 
-    public Region GetHomeRegion()
-    {
-        return home;
-    }
+    int GetConstructionTime();
+
+    void ActivateBuilding();
+
 }

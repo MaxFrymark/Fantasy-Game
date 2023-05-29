@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f9ff390539e8114daff13252ad4895f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  farmPrefab: {fileID: 1187404546001193945, guid: edc4d16e42f85a34a884a47cb660ac49, type: 3}
+  farmPrefab: {fileID: 7156048356892160163, guid: edc4d16e42f85a34a884a47cb660ac49, type: 3}
   farmUnderConstructionPrefab: {fileID: 536141180531663525, guid: 074922d50a1fcb64b86f8728251dc91a, type: 3}
   farmPlacerPrefab: {fileID: 7952955210427874471, guid: 141d0f0e75eb23a479eff69e1cbc00ec, type: 3}
 --- !u!4 &93579684

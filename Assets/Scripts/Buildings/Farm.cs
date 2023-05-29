@@ -4,5 +4,8 @@ using UnityEngine;
 
 public class Farm : TileBuilding
 {
-    
+    public override void ActivateBuilding()
+    {
+        throw new System.NotImplementedException();
+    }
 }

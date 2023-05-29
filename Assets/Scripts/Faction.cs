@@ -88,7 +88,7 @@ public class AIFaction : Faction
 
     public override void ResetTurn()
     {
-        ai.GenerateCommandsForFaction();
+        //ai.GenerateCommandsForFaction();
     }
 }
 
