@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Farm : TileBuilding
+public class Farm : TileEconomicBuilding
 {
-    public override void ActivateBuilding()
+
+    public override void TakeAction()
     {
-        throw new System.NotImplementedException();
+        
     }
 }

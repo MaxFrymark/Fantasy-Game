@@ -16,7 +16,7 @@ public class RegionManager : MonoBehaviour
     int minimumRegionSize = 7;
     int maximumRegionSize = 12;
 
-    int numberOfPlayerFactions = 1;
+    int numberOfPlayerFactions = 2;
     int numberOfCities = 6;
 
     public void CreateRegion(TileNode startingNode)
@@ -461,7 +461,7 @@ public class RegionManager : MonoBehaviour
         {
             faction = factionCreator.CreateAIFaction(newCity);
         }
-        newCity.SetCityFlagColor(faction.GetFactionColor());
+        newCity.SetCityOwner(faction);
         region.SetOwner(faction);
     }
 }

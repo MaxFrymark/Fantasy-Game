@@ -11,5 +11,4 @@ public interface IBuilding
     int GetConstructionTime();
 
     void ActivateBuilding();
-
 }

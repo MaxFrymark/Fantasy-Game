@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,15 +6,18 @@ using UnityEngine;
 public class TurnManager : MonoBehaviour
 {
     [SerializeField] InputHandler inputHandler;
+    [SerializeField] TopBar topBar;
+
     int currentTurnNumber = 1;
     List<Command> commandQueue = new List<Command>();
     List<Faction> factions = new List<Faction>();
+
+    public event EventHandler OnUpdateEconomy;
 
     private void Start()
     {
         //ResetTurn();
         EndTurn();
-        Debug.Log("Turn: " + currentTurnNumber);
     }
 
     public void AddFaction(Faction faction)
@@ -29,6 +33,7 @@ public class TurnManager : MonoBehaviour
         }
         ExecuteAllCommands();
         CleanUpCommandQueue();
+        UpdateEconomy();
         ResetTurn();
     }
 
@@ -41,7 +46,7 @@ public class TurnManager : MonoBehaviour
                 PlayerFaction playerFaction = (PlayerFaction)faction;
                 if (!playerFaction.GetHasEndedTurn())
                 {
-                    inputHandler.SetActivePlayerFaction(playerFaction);
+                    UpdateActivePlayerFaction(playerFaction);
                     return true;
                 }
             }
@@ -73,6 +78,11 @@ public class TurnManager : MonoBehaviour
         }
     }
 
+    private void UpdateEconomy()
+    {
+        OnUpdateEconomy.Invoke(this, EventArgs.Empty);
+    }
+
     private void ResetTurn()
     {
         PlayerFaction firstPlayer = null;
@@ -82,11 +92,17 @@ public class TurnManager : MonoBehaviour
             if(faction is PlayerFaction && firstPlayer == null)
             {
                 firstPlayer = faction as PlayerFaction;
-                inputHandler.SetActivePlayerFaction(firstPlayer);
+                UpdateActivePlayerFaction(firstPlayer);
             }
         }
         currentTurnNumber++;
-        Debug.Log("Turn: " + currentTurnNumber);
+        topBar.UpdateTurnCounter(currentTurnNumber);
 
+    }
+
+    private void UpdateActivePlayerFaction(PlayerFaction faction)
+    {
+        inputHandler.SetActivePlayerFaction(faction);
+        topBar.UpdateActivePlayer(faction);
     }
 }

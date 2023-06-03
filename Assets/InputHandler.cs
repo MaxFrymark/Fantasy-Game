@@ -19,8 +19,14 @@ public class InputHandler : MonoBehaviour
     [SerializeField] BuildingUnderConstruction buildingUnderConstructionPrefab;
     [SerializeField] BuildingPlacer buildingPlacerPrefab;
 
+    [SerializeField] GameObject toolTip;
+    bool toolTipCoroutinerunning = false;
+    private Coroutine toolTipCoroutine;
+
     BuildingPlacer buildingPlacer;
     TileBuilding tempBuilding;
+
+    Vector3 currentMousePosition;
 
     private void Start()
     {
@@ -33,22 +39,49 @@ public class InputHandler : MonoBehaviour
         {
             activePlayerFaction.ReceiveCommandFromInput(new TestCommandWithTimer(activePlayerFaction));
         }
-        /*if(Input.GetMouseButton(0))
-        {
-            TileNode node = FindMousePosition();
-            Debug.Log(node.GetNodeTerrainData().GetTerrainType());
-        }*/
 
         if (readingMouse)
         {
             mouseAction();
         }
+
+        else
+        {
+            /*if (currentMousePosition == Camera.main.ScreenToWorldPoint(Input.mousePosition))
+            {
+                if (!toolTipCoroutinerunning && !toolTip.activeInHierarchy)
+                {
+                    toolTipCoroutine = StartCoroutine(EnableToolTip());
+                }
+            }
+
+            else
+            {
+                if (toolTip.activeInHierarchy)
+                {
+                    toolTip.SetActive(false);
+                }
+
+                if (toolTipCoroutinerunning)
+                {
+                    StopCoroutine(toolTipCoroutine);
+                    toolTipCoroutine = null;
+                    toolTipCoroutinerunning = false;
+                }
+
+                currentMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            }*/
+        }
     }
 
     public void SetActivePlayerFaction(PlayerFaction playerFaction)
     {
+        if(activePlayerFaction != null)
+        {
+            activePlayerFaction.SetActiveFaction(false);
+        }
         activePlayerFaction = playerFaction;
-        Debug.Log("Player " + playerFaction.GetFactionName() + " is active.");
+        activePlayerFaction.SetActiveFaction(true);
     }
 
     public void PlayerEndedTurn()
@@ -60,6 +93,14 @@ public class InputHandler : MonoBehaviour
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         return nodeManager.FindClosestNodeToWorldPostition(mousePosition);
+    }
+
+    private IEnumerator EnableToolTip()
+    {
+        toolTipCoroutinerunning = true;
+        yield return new WaitForSeconds(2f);
+        toolTip.SetActive(true);
+        toolTipCoroutinerunning = false;
     }
 
     public void SetToBuildBuilding(int index)
@@ -96,7 +137,7 @@ public class InputHandler : MonoBehaviour
                 buildingUnderConstruction.SetSprite(tempBuilding.GetBlankSprite());
                 buildingUnderConstruction.UpdateBuildingCountDown(tempBuilding.GetConstructionTime());
                 Destroy(buildingPlacer.gameObject);
-                activePlayerFaction.ReceiveCommandFromInput(new BuildBuildingCommand(buildingUnderConstruction, tempBuilding.gameObject, tempBuilding.GetConstructionTime()));
+                activePlayerFaction.ReceiveCommandFromInput(new BuildBuildingCommand(buildingUnderConstruction, tempBuilding, tempBuilding.GetConstructionTime()));
                 tempBuilding.gameObject.SetActive(false);
                 readingMouse = false;
                 tempBuilding = null;

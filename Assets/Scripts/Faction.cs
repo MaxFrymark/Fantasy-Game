@@ -30,6 +30,11 @@ public abstract class Faction
         return factionName;
     }
 
+    public City GetCapitol()
+    {
+        return capitolCity;
+    }
+
     public abstract void EndFactionTurn();
     public abstract void ResetTurn();
 
@@ -44,6 +49,8 @@ public class PlayerFaction : Faction
     public PlayerFaction(City capitolCity, Color factionColor) : base(capitolCity, factionColor)    {    }
 
     private bool hasEndedTurn = false;
+
+    bool activeFaction;
 
     public bool GetHasEndedTurn()
     {
@@ -64,6 +71,16 @@ public class PlayerFaction : Faction
     public override void ResetTurn()
     {
         hasEndedTurn = false;
+    }
+
+    public void SetActiveFaction(bool active)
+    {
+        activeFaction = active;
+    }
+
+    public bool GetActiveFaction()
+    {
+        return activeFaction;
     }
 }
 

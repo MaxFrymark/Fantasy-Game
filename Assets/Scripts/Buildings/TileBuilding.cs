@@ -14,6 +14,7 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
     TileNode homeTile;
     Region homeRegion;
 
+
     public int GetConstructionTime()
     {
         return constructionTime;
@@ -45,7 +46,8 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
 
     public virtual void ActivateBuilding()
     {
-
+        AssignHomeTile(FindObjectOfType<NodeManager>().FindClosestNodeToWorldPostition(transform.position));
+        AssignHomeRegion(homeTile.GetRegion());
     }
     
 }

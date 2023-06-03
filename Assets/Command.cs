@@ -63,10 +63,10 @@ public class TestCommandWithTimer : Command
 public class BuildBuildingCommand : Command
 {
     BuildingUnderConstruction underConstruction;
-    GameObject building;
+    TileBuilding building;
     int remainingTurns;
 
-    public BuildBuildingCommand(BuildingUnderConstruction underConstruction, GameObject building, int remainingTurns)
+    public BuildBuildingCommand(BuildingUnderConstruction underConstruction, TileBuilding building, int remainingTurns)
     {
         this.underConstruction = underConstruction;
         this.building = building;
@@ -75,8 +75,6 @@ public class BuildBuildingCommand : Command
 
     public override void ExecuteCommand()
     {
-        Debug.Log("Turns Remaining: " + remainingTurns);
-        
         if(remainingTurns > 1)
         {
             remainingTurns--;
@@ -85,8 +83,9 @@ public class BuildBuildingCommand : Command
 
         else
         {
-            building.SetActive(true);
+            building.gameObject.SetActive(true);
             building.transform.position = underConstruction.transform.position;
+            building.ActivateBuilding();
             Object.Destroy(underConstruction.gameObject);
             FinishCommand();
         }
