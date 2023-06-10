@@ -367,6 +367,9 @@ public class NodeTerrainData
 
     TerrainType terrainType;
 
+    int baseFertility;
+    int currentFertility;
+
     public NodeTerrainData(TileNode parentNode)
     {
         riverBorders = new RiverNode[6];
@@ -391,16 +394,19 @@ public class NodeTerrainData
     public void SetTerrainType(TerrainType terrainType)
     {
         this.terrainType = terrainType;
+        CalculateFertility();
     }
 
     public void AssignRiverToRiverBorder(RiverNode node, int index)
     {
         riverBorders[index] = node;
+        CalculateFertility();
     }
 
     public void ChangeForestLevel(int forrestAdjustment)
     {
         forestLevel += forrestAdjustment;
+        CalculateFertility();
     }
 
     public void RemoveForest()
@@ -411,6 +417,45 @@ public class NodeTerrainData
             RemoveForest();
         }
         parentNode.GetNodeManager().UpdadateNodeOnTileMap(parentNode);
+    }
+
+    private void CalculateFertility()
+    {
+        int fertility = 0;
+        switch (terrainType)
+        {
+            case TerrainType.plains:
+                fertility = 100;
+                break;
+            case TerrainType.hills:
+                fertility = 50;
+                break;
+        }
+
+        if(fertility > 0)
+        {
+            fertility -= forestLevel * 20;
+            bool hasRiverBorder = false;
+            foreach(RiverNode node in riverBorders)
+            {
+                if(node != null)
+                {
+                    hasRiverBorder = true;
+                }
+            }
+            if (hasRiverBorder)
+            {
+                fertility += fertility / 2;
+            }
+        }
+
+        baseFertility = fertility;
+        currentFertility = baseFertility;
+    }
+
+    public int GetFertility()
+    {
+        return currentFertility;
     }
 
     public bool IsNodeOcean()

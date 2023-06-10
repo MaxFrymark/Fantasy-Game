@@ -12,24 +12,16 @@ public abstract class Settlement : TileBuilding
     string settlementName;
     Treasury treasury;
 
-    
-
-    protected List<IEconomicBuilding> economicBuildings = new List<IEconomicBuilding>();
+    protected List<IBuilding> buildings = new List<IBuilding>();
 
     protected virtual void Start()
     {
-        FindObjectOfType<TurnManager>().OnUpdateEconomy += EconomicActivityForTurn;
-        if(treasury == null) 
-        {
-            treasury = new Treasury();
-        }
+        treasury = new Treasury();
         for (int i = 0; i < startingPopulation; i++)
         {
             AddPop();
         }
     }
-
-    
 
     public void SetName(string settlementName)
     {
@@ -42,9 +34,14 @@ public abstract class Settlement : TileBuilding
         return settlementName;
     }
 
-    public void AddEconoomicBuilding(IEconomicBuilding economicBuilding)
+    public void AddBuilding(IBuilding building)
     {
-        economicBuildings.Add(economicBuilding);
+        buildings.Add(building);
+        if(building is IEconomicObject)
+        {
+            IEconomicObject economicBuilding = (IEconomicObject)building;
+            treasury.AddEconomicObject(economicBuilding);
+        }
     }
 
     public void HandlePopulationGrowth()
@@ -52,13 +49,7 @@ public abstract class Settlement : TileBuilding
 
     }
 
-    public void EconomicActivityForTurn(object sender, EventArgs e)
-    {
-        foreach(IEconomicBuilding economicBuilding in economicBuildings)
-        {
-            economicBuilding.TakeAction();
-        }
-    }
+    
 
     private void AddPop()
     {
@@ -97,5 +88,10 @@ public abstract class Settlement : TileBuilding
     public List<Pop> GetWorkers()
     {
         return settlementPopulation;
+    }
+
+    public virtual void UpdateSettlementManagerUI()
+    {
+
     }
 }

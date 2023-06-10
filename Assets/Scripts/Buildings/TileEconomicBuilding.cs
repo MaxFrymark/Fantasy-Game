@@ -7,7 +7,7 @@ public abstract class TileEconomicBuilding : TileBuilding, IEconomicBuilding
 {
     Settlement attachedSettlement;
     protected List<Pop> workers = new List<Pop>();
-    [SerializeField] int maxWorkers;
+    [SerializeField] protected int maxWorkers;
     [SerializeField] TextMeshPro workerCounter;
     [SerializeField] GameObject workerManagement;
 
@@ -40,11 +40,12 @@ public abstract class TileEconomicBuilding : TileBuilding, IEconomicBuilding
     private void UpdateWorkerCount()
     {
         workerCounter.text = workers.Count + "/" + maxWorkers;
+        attachedSettlement.UpdateSettlementManagerUI();
     }
 
     public void AssignToSettlement(Settlement settlement)
     {
-        settlement.AddEconoomicBuilding(this);
+        settlement.AddBuilding(this);
         attachedSettlement = settlement;
         treasury = attachedSettlement.GetTreasury();
     }
@@ -64,5 +65,10 @@ public abstract class TileEconomicBuilding : TileBuilding, IEconomicBuilding
         }
     }
 
+    
+
+    public abstract int GetPriority();
+
     public abstract void TakeAction();
+    public abstract Resource CalculateResourseToAdd();
 }

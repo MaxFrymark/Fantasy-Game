@@ -29,7 +29,7 @@ public class City : Settlement
             {
                 cityManagementUI.gameObject.SetActive(true);
                 cityManagementUI.OpenCityMangement(this);
-                foreach (IEconomicBuilding building in economicBuildings)
+                foreach (IBuilding building in buildings)
                 {
                     if (building is TileEconomicBuilding)
                     {
@@ -43,13 +43,21 @@ public class City : Settlement
 
     public void CloseMenu()
     {
-        foreach (IEconomicBuilding building in economicBuildings)
+        foreach (IBuilding building in buildings)
         {
             if (building is TileEconomicBuilding)
             {
                 TileEconomicBuilding economicBuilding = building as TileEconomicBuilding;
                 economicBuilding.HandleWorkerManagement(false);
             }
+        }
+    }
+
+    public override void UpdateSettlementManagerUI()
+    {
+        if (cityManagementUI.gameObject.activeSelf)
+        {
+            cityManagementUI.UpdateIdleWorkerCount();
         }
     }
 }

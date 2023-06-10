@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class TopBar : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI turnCounter;
+    [SerializeField] TextMeshProUGUI yearCounter;
+    [SerializeField] TextMeshProUGUI monthCounter;
 
     [SerializeField] Image playerFlag;
     [SerializeField] TextMeshProUGUI playerName;
@@ -15,9 +16,10 @@ public class TopBar : MonoBehaviour
     [SerializeField] TextMeshProUGUI woodCounter;
     [SerializeField] TextMeshProUGUI metalCounter;
 
-    public void UpdateTurnCounter(int turn)
+    public void UpdateTurnCounter(int year, int month)
     {
-        turnCounter.text = "Turn: " + turn.ToString();
+        yearCounter.text = "Year: " + year.ToString();
+        monthCounter.text = "Month: " + month.ToString();
     }
 
     public void UpdateActivePlayer(PlayerFaction faction)
@@ -29,8 +31,8 @@ public class TopBar : MonoBehaviour
 
     private void UpdateResourceDisplay(Treasury treasury)
     {
-        foodCounter.text = treasury.GetFoodQuantity().ToString();
-        woodCounter.text = treasury.GetWoodQuantity().ToString();
-        metalCounter.text = treasury.GetMetalQuantity().ToString();
+        foodCounter.text = treasury.GetResource(Resource.ResourceType.Food).Quantity.ToString();
+        woodCounter.text = treasury.GetResource(Resource.ResourceType.Wood).Quantity.ToString();
+        metalCounter.text = treasury.GetResource(Resource.ResourceType.Metal).Quantity.ToString();
     }
 }

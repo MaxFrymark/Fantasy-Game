@@ -14,9 +14,10 @@ public class TurnManager : MonoBehaviour
 
     public event EventHandler OnUpdateEconomy;
 
+    Calendar calendar = new Calendar();
+
     private void Start()
     {
-        //ResetTurn();
         EndTurn();
     }
 
@@ -33,6 +34,7 @@ public class TurnManager : MonoBehaviour
         }
         ExecuteAllCommands();
         CleanUpCommandQueue();
+        UpdateCaldendar();
         UpdateEconomy();
         ResetTurn();
     }
@@ -95,8 +97,7 @@ public class TurnManager : MonoBehaviour
                 UpdateActivePlayerFaction(firstPlayer);
             }
         }
-        currentTurnNumber++;
-        topBar.UpdateTurnCounter(currentTurnNumber);
+        
 
     }
 
@@ -104,5 +105,52 @@ public class TurnManager : MonoBehaviour
     {
         inputHandler.SetActivePlayerFaction(faction);
         topBar.UpdateActivePlayer(faction);
+    }
+
+    private void UpdateCaldendar()
+    {
+        currentTurnNumber++;
+        calendar.Increment();
+        topBar.UpdateTurnCounter(calendar.GetYear(), calendar.GetMonth());
+    }
+
+    public Calendar GetCalendar()
+    {
+        return calendar;
+    }
+}
+
+public class Calendar
+{
+    public Calendar()
+    {
+
+    }
+
+    int year = 1;
+    int month = 1;
+
+    public void Increment()
+    {
+        if(month == 12)
+        {
+            month = 1;
+            year++;
+        }
+
+        else
+        {
+            month++;
+        }
+    }
+
+    public int GetYear()
+    {
+        return year;
+    }
+
+    public int GetMonth()
+    {
+        return month;
     }
 }

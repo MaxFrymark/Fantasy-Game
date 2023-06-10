@@ -44,6 +44,11 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
         return blankSprite;
     }
 
+    protected TileNode GetHomeTile()
+    {
+        return homeTile;
+    }
+
     public virtual void ActivateBuilding()
     {
         AssignHomeTile(FindObjectOfType<NodeManager>().FindClosestNodeToWorldPostition(transform.position));
