@@ -498,6 +498,7 @@ public class Region
     public TileNode SetSettlement(Settlement settlement)
     {
         this.settlement = settlement;
+        settlement.AssignHomeRegion(this);
         List<TileNode> nodes = new List<TileNode>();
         foreach (TileNode n in tilesInRegion)
         {

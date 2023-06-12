@@ -12,6 +12,10 @@ public class CameraMover : MonoBehaviour
     [SerializeField] float cameraMoveSpeed;
     [SerializeField] CameraBorder[] cameraBorders;
     CameraBorder activeCameraBorder = null;
+
+    Vector3 cameraDestination;
+    bool cameraMovingToTarget;
+    bool cameraLocked = false;
     
     void Update()
     {
@@ -25,9 +29,14 @@ public class CameraMover : MonoBehaviour
             ZoomIn();
         }
 
-        if(activeCameraBorder != null)
+        if(activeCameraBorder != null && !cameraLocked)
         {
             MoveCamera();
+        }
+
+        if (cameraMovingToTarget)
+        {
+            MoveCameraToTarget();
         }
     }
 
@@ -126,5 +135,25 @@ public class CameraMover : MonoBehaviour
 
         cameraBorders[7].transform.localPosition = new Vector3(-cameraSize * 2, -cameraSize, 10);
         cameraBorders[7].GetBorder().size = new Vector2(cameraSize * 4 * 0.2f, cameraSize * 2 * 0.2f);
+    }
+
+    public void SetCameraTarget(Vector3 target)
+    {
+        cameraDestination = new Vector3(target.x, target.y, -10);
+        cameraMovingToTarget = true;
+    }
+
+    private void MoveCameraToTarget()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, cameraDestination, cameraMoveSpeed * 2);
+        if(Vector3.Distance(transform.position, cameraDestination) == 0)
+        {
+            cameraMovingToTarget = false;
+        }
+    }
+
+    public void SetCameraLock(bool cameraLocked)
+    {
+        this.cameraLocked = cameraLocked;
     }
 }

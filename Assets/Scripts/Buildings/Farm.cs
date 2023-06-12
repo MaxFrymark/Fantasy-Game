@@ -116,4 +116,40 @@ public class Farm : TileEconomicBuilding
     {
         return 1;
     }
+
+    public override TileNode GetValidLocationForBuilding(Region region)
+    {
+        TileNode nodeToPlace = null;
+        List<TileNode> nodesWithHighestFertility = new List<TileNode>();
+        foreach(TileNode node in region.GetTilesInRegion())
+        {
+            NodeTerrainData terrainData = node.GetNodeTerrainData();
+            if(node.GetBuilding() == null && terrainData.GetTerrainType() != TileNode.TerrainType.mountain)
+            {
+                if(nodesWithHighestFertility.Count == 0)
+                {
+                    nodesWithHighestFertility.Add(node);
+                }
+                else
+                {
+                    if (nodesWithHighestFertility[0].GetNodeTerrainData().GetFertility() < terrainData.GetFertility())
+                    {
+                        nodesWithHighestFertility.Clear();
+                        nodesWithHighestFertility.Add(node);
+                    }
+                    else if(nodesWithHighestFertility[0].GetNodeTerrainData().GetFertility() == terrainData.GetFertility())
+                    {
+                        nodesWithHighestFertility.Add(node);
+                    }
+                }
+            }
+        }
+
+        if(nodesWithHighestFertility.Count > 0)
+        {
+            nodeToPlace = nodesWithHighestFertility[Random.Range(0, nodesWithHighestFertility.Count)];
+        }
+
+        return nodeToPlace;
+    }
 }

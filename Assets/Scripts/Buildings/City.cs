@@ -6,12 +6,15 @@ public class City : Settlement
 {
     [SerializeField] SpriteRenderer cityFlag;
     Faction owner;
-    CityManagementUI cityManagementUI;
+    InputHandler inputHandler;
 
     protected override void Start()
     {
         base.Start();
-        cityManagementUI = FindObjectOfType<CityManagementUI>(true);
+        if(owner is PlayerFaction)
+        {
+            inputHandler = gameObject.AddComponent<InputHandler>();
+        }
     }
 
     public void SetCityOwner(Faction faction)
@@ -22,22 +25,9 @@ public class City : Settlement
 
     private void OnMouseDown()
     {
-        if (owner is PlayerFaction)
+        if(inputHandler != null)
         {
-            PlayerFaction faction = (PlayerFaction)owner;
-            if (faction.GetActiveFaction())
-            {
-                cityManagementUI.gameObject.SetActive(true);
-                cityManagementUI.OpenCityMangement(this);
-                foreach (IBuilding building in buildings)
-                {
-                    if (building is TileEconomicBuilding)
-                    {
-                        TileEconomicBuilding economicBuilding = building as TileEconomicBuilding;
-                        economicBuilding.HandleWorkerManagement(true);
-                    }
-                }
-            }
+            inputHandler.OpenCityManager((PlayerFaction)owner);
         }
     }
 
@@ -55,9 +45,9 @@ public class City : Settlement
 
     public override void UpdateSettlementManagerUI()
     {
-        if (cityManagementUI.gameObject.activeSelf)
+        if(owner is PlayerFaction)
         {
-            cityManagementUI.UpdateIdleWorkerCount();
+            inputHandler.UpdateSettlementManagerUI();
         }
     }
 }

@@ -137,6 +137,7 @@ MonoBehaviour:
   blankSprite: {fileID: 0}
   settlementNameField: {fileID: 3049743173321978905}
   startingPopulation: 5
+  farm: {fileID: 7156048356892160163, guid: edc4d16e42f85a34a884a47cb660ac49, type: 3}
 --- !u!61 &3555288021567449343
 BoxCollider2D:
   m_ObjectHideFlags: 0

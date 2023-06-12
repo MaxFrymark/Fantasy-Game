@@ -55,4 +55,23 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
         AssignHomeRegion(homeTile.GetRegion());
     }
     
+    public virtual TileNode GetValidLocationForBuilding(Region region)
+    {
+        TileNode nodeToPlace = null;
+        List<TileNode> possibleLocations = new List<TileNode>();
+        foreach(TileNode node in region.GetTilesInRegion())
+        {
+            if(node.GetBuilding() == null && CheckIfTerrainValid(node.GetNodeTerrainData()))
+            {
+                possibleLocations.Add(node);
+            }
+        }
+
+        if(possibleLocations.Count > 0)
+        {
+            nodeToPlace = possibleLocations[Random.Range(0, possibleLocations.Count)];
+        }
+
+        return nodeToPlace;
+    }
 }

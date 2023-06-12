@@ -28,9 +28,16 @@ public class InputHandler : MonoBehaviour
 
     Vector3 currentMousePosition;
 
+    CameraMover cameraMover;
+    CityManagementUI cityManagementUI;
+
+
     private void Start()
     {
+        cameraMover = Camera.main.GetComponent<CameraMover>();
         nodeManager = FindObjectOfType<NodeManager>();
+        cityManagementUI = FindObjectOfType<CityManagementUI>(true);
+
     }
 
     private void Update()
@@ -82,6 +89,7 @@ public class InputHandler : MonoBehaviour
         }
         activePlayerFaction = playerFaction;
         activePlayerFaction.SetActiveFaction(true);
+        cameraMover.SetCameraTarget(playerFaction.GetCapitol().transform.position);
     }
 
     public void PlayerEndedTurn()
@@ -156,5 +164,39 @@ public class InputHandler : MonoBehaviour
     private bool ValidatePlacement(TileNode currentNode)
     {
         return tempBuilding.CheckIfTerrainValid(currentNode.GetNodeTerrainData()) && currentNode.GetRegion().GetOwner() == activePlayerFaction && currentNode.GetBuilding() == null;
+    }
+
+    public void OpenCityManager(PlayerFaction faction)
+    {
+        if(faction.GetActiveFaction())
+        {
+            cityManagementUI.gameObject.SetActive(true);
+            cityManagementUI.OpenCityMangement(faction.GetCapitol());
+            cameraMover.SetCameraTarget(faction.GetCapitol().transform.position);
+            cameraMover.SetCameraLock(true);
+            foreach (IBuilding building in faction.GetCapitol().GetBuildingList())
+            {
+                if (building is TileEconomicBuilding)
+                {
+                    TileEconomicBuilding economicBuilding = building as TileEconomicBuilding;
+                    economicBuilding.HandleWorkerManagement(true);
+                }
+            }
+        }
+    }
+
+    public void UpdateSettlementManagerUI()
+    {
+        if (cityManagementUI.gameObject.activeSelf)
+        {
+            cityManagementUI.UpdateIdleWorkerCount();
+        }
+    }
+
+    public void CloseCityManagement()
+    {
+        cameraMover.SetCameraLock(false);
+        activePlayerFaction.GetCapitol().CloseMenu();
+        cityManagementUI.gameObject.SetActive(false);
     }
 }

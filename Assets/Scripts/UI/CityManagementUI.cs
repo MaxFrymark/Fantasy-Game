@@ -28,9 +28,5 @@ public class CityManagementUI : MonoBehaviour
         idleWorkerCounter.text = "Idle Workers: " + idleWorkers;
     }
 
-    public void CloseCityManagement()
-    {
-        city.CloseMenu();
-        gameObject.SetActive(false);
-    }
+    
 }

@@ -207,8 +207,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1574179448}
-        m_TargetAssemblyTypeName: CityManagementUI, Assembly-CSharp
+      - m_Target: {fileID: 93579683}
+        m_TargetAssemblyTypeName: InputHandler, Assembly-CSharp
         m_MethodName: CloseCityManagement
         m_Mode: 1
         m_Arguments:

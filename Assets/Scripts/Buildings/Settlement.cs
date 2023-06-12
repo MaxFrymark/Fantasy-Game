@@ -14,6 +14,8 @@ public abstract class Settlement : TileBuilding
 
     protected List<IBuilding> buildings = new List<IBuilding>();
 
+    [SerializeField] Farm farm;
+
     protected virtual void Start()
     {
         treasury = new Treasury();
@@ -21,6 +23,18 @@ public abstract class Settlement : TileBuilding
         {
             AddPop();
         }
+
+        BuildStartingBuildings();
+    }
+
+    protected virtual void BuildStartingBuildings()
+    {
+        Farm newFarm = Instantiate(farm);
+        newFarm.gameObject.SetActive(true);
+        TileNode farmNode = newFarm.GetValidLocationForBuilding(GetHomeRegion());
+        newFarm.transform.position = farmNode.GetWorldPosition();
+        newFarm.ActivateBuilding();
+        farmNode.GetNodeTerrainData().RemoveForest();
     }
 
     public void SetName(string settlementName)
@@ -48,8 +62,6 @@ public abstract class Settlement : TileBuilding
     {
 
     }
-
-    
 
     private void AddPop()
     {
@@ -88,6 +100,11 @@ public abstract class Settlement : TileBuilding
     public List<Pop> GetWorkers()
     {
         return settlementPopulation;
+    }
+
+    public List<IBuilding> GetBuildingList()
+    {
+        return buildings;
     }
 
     public virtual void UpdateSettlementManagerUI()
