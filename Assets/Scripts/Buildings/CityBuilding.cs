@@ -9,8 +9,10 @@ public abstract class CityBuilding : IEconomicBuilding
     City attachedCity;
     protected int constructionTime;
     protected int priority;
-    List<Pop> workers;
+    protected List<Pop> workers;
     protected int maxWorkers;
+
+    protected Treasury treasury;
 
 
     public CityBuilding(Faction owner, Region homeRegion)
@@ -34,7 +36,10 @@ public abstract class CityBuilding : IEconomicBuilding
         return constructionTime;
     }
 
-    public abstract void ActivateBuilding();
+    public virtual void ActivateBuilding()
+    {
+
+    }
 
     List<Resource> GetConstructionCost()
     {
@@ -46,6 +51,7 @@ public abstract class CityBuilding : IEconomicBuilding
     protected abstract void SetUpConstructionCost(List<Resource> constructionCost);
 
     public abstract void TakeAction();
+    
     public int GetPriority()
     {
         return priority;
