@@ -200,7 +200,7 @@ public class InputHandler : MonoBehaviour
 
     public void UpdateSettlementManagerUI()
     {
-        uiHandler.UpdateSettlementManager();
+        uiHandler.UpdateSettlementManager(activePlayerFaction);
     }
 
     public void CloseCityManagement()

@@ -40,12 +40,12 @@ public class UIHandler : MonoBehaviour
         }
     }
 
-    public void UpdateSettlementManager()
+    public void UpdateSettlementManager(PlayerFaction faction)
     {
         if (cityManager.gameObject.activeSelf)
         {
             cityManager.UpdateIdleWorkerCount();
-            //topBar.UpdateActivePlayer(faction);
+            topBar.UpdateActivePlayer(faction);
         }
     }
 

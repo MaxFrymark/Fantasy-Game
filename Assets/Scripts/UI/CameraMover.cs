@@ -118,10 +118,10 @@ public class CameraMover : MonoBehaviour
         cameraBorders[1].transform.localPosition = new Vector3(0, -cameraSize, 10);
         cameraBorders[1].GetBorder().size = new Vector2(cameraSize * 4 * 0.8f, 1);
 
-        cameraBorders[2].transform.localPosition = new Vector3(cameraSize * 2, 0, 10);
+        cameraBorders[2].transform.localPosition = new Vector3(cameraSize * 1.8f, 0, 10);
         cameraBorders[2].GetBorder().size = new Vector2(1, cameraSize * 2 * 0.8f);
 
-        cameraBorders[3].transform.localPosition = new Vector3(-cameraSize * 2, 0, 10);
+        cameraBorders[3].transform.localPosition = new Vector3(-cameraSize * 1.8f, 0, 10);
         cameraBorders[3].GetBorder().size = new Vector2(1, cameraSize * 2 * 0.8f);
 
         cameraBorders[4].transform.localPosition = new Vector3(cameraSize * 2, cameraSize, 10);

@@ -12,28 +12,31 @@ public class TopBar : MonoBehaviour
     [SerializeField] Image playerFlag;
     [SerializeField] TextMeshProUGUI playerName;
 
-    [SerializeField] TextMeshProUGUI foodCounter;
-    [SerializeField] TextMeshProUGUI foodProjection;
-    [SerializeField] TextMeshProUGUI woodCounter;
-    [SerializeField] TextMeshProUGUI woodProjection;
-    [SerializeField] TextMeshProUGUI metalCounter;
-    [SerializeField] TextMeshProUGUI metalProjection;
-    [SerializeField] TextMeshProUGUI armsCounter;
-    [SerializeField] TextMeshProUGUI armsProjection;
+    Calendar calendar;
+
+    [SerializeField] Transform[] resourceCounterPoints;
+    int curentCounterPoint = 0;
+
+    [SerializeField] ResourceCounter ressourceCounterPrefab;
+    List<ResourceCounter> resourceCounterList = new List<ResourceCounter>();
 
     public void UpdateTurnCounter()
     {
-        Calendar calendar = Calendar.Singleton;
+        if(calendar == null)
+        {
+            calendar = Calendar.Singleton;
+        }
+        
         yearCounter.text = "Year: " + calendar.GetYear().ToString();
         monthCounter.text = "Month: " + calendar.GetMonth().ToString();
     }
 
     public void UpdateActivePlayer(PlayerFaction faction)
     {
-        
         playerFlag.color = faction.GetFactionColor();
         playerName.text = faction.GetFactionName();
         UpdateResourceDisplay(faction.GetCapitol().GetTreasury());
+        CalculateProjectedIncome(faction.GetCapitol().GetTreasury().GetEconomicObjects());
         UpdateTurnCounter();
     }
 
@@ -41,29 +44,28 @@ public class TopBar : MonoBehaviour
     {
         foreach(Resource resource in treasury.GetResources())
         {
-            switch(resource.GetResourceType)
-            {
-                case Resource.ResourceType.Food:
-                    UpdateDisplay(foodCounter, resource);
-                    break;
-                case Resource.ResourceType.Wood:
-                    UpdateDisplay(woodCounter, resource);
-                    break;
-                case Resource.ResourceType.Metal:
-                    UpdateDisplay(metalCounter, resource);
-                    break;
-                case Resource.ResourceType.HeavyArms:
-                    UpdateDisplay(armsCounter, resource);
-                    break;
-            }
+            GetMatchingResourceCounter(resource).UpdateResourceCount(resource);
         }
-        CalculateProjectedIncome(treasury.GetEconomicObjects());
     }
 
-    private void UpdateDisplay(TextMeshProUGUI display, Resource resource)
+    private ResourceCounter GetMatchingResourceCounter(Resource resource)
     {
-        display.text = resource.ToString();
+        foreach(ResourceCounter resourceCounter in resourceCounterList)
+        {
+            if(resourceCounter.GetCounterTag() == resource.GetResourceType)
+            {
+                return resourceCounter;
+            }
+        }
+
+        ResourceCounter newResourceCounter = Instantiate(ressourceCounterPrefab, resourceCounterPoints[curentCounterPoint].position, Quaternion.identity, transform);
+        newResourceCounter.SetUpCounter(null, resource);
+        resourceCounterList.Add(newResourceCounter);
+        curentCounterPoint++;
+        return newResourceCounter;
     }
+
+    
 
     private void CalculateProjectedIncome(List<IEconomicObject> economicObjects)
     {
@@ -85,7 +87,10 @@ public class TopBar : MonoBehaviour
             }
         }
 
-        UpdateProjectionDisplay(incomes);
+        foreach(Resource income in incomes)
+        {
+            GetMatchingResourceCounter(income).UpdateResourceIncome(income);
+        }
     }
 
     private void AddToIncomesList(List<Resource> incomes, Resource resource)
@@ -112,28 +117,7 @@ public class TopBar : MonoBehaviour
             }
         }
     }
-
-    private void UpdateProjectionDisplay(List<Resource> incomes)
-    {
-        foreach(Resource resource in incomes)
-        {
-            switch(resource.GetResourceType)
-            {
-                case Resource.ResourceType.Food:
-                    UpdateProjection(foodProjection, resource); 
-                    break;
-                case Resource.ResourceType.Wood:
-                    UpdateProjection(woodProjection, resource);
-                    break;
-                case Resource.ResourceType.Metal:
-                    UpdateProjection(metalProjection, resource);
-                    break;
-                case Resource.ResourceType.HeavyArms:
-                    UpdateProjection(armsProjection, resource);
-                    break;
-            }
-        }
-    }
+    
 
     private void UpdateProjection(TextMeshProUGUI display, Resource resource)
     {
