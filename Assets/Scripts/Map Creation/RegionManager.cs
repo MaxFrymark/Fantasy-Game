@@ -13,10 +13,10 @@ public class RegionManager : MonoBehaviour
 
     private List<Region> regions = new List<Region>();
 
-    int minimumRegionSize = 7;
-    int maximumRegionSize = 12;
+    int minimumRegionSize = 12;
+    int maximumRegionSize = 16;
 
-    int numberOfPlayerFactions = 1;
+    int numberOfPlayerFactions = 2;
     int numberOfCities = 6;
 
     public void CreateRegion(TileNode startingNode)
@@ -310,6 +310,7 @@ public class RegionManager : MonoBehaviour
                 {
                     newVillage.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(node);
                     newVillage.SetName(CityNameGenerator.Instance.GetRandomCityName());
+                    newVillage.ActivateBuilding();
                 }
             }
         }
@@ -463,6 +464,7 @@ public class RegionManager : MonoBehaviour
         }
         newCity.SetCityOwner(faction);
         region.SetOwner(faction);
+        newCity.ActivateBuilding();
     }
 
     

@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class InputHandler : MonoBehaviour
 {
+    [SerializeField] string inputName;
+    
     PlayerFaction activePlayerFaction;
     NodeManager nodeManager;
 
@@ -29,15 +32,14 @@ public class InputHandler : MonoBehaviour
     Vector3 currentMousePosition;
 
     CameraMover cameraMover;
-    CityManagementUI cityManagementUI;
+    UIHandler uiHandler;
 
 
     private void Start()
     {
         cameraMover = Camera.main.GetComponent<CameraMover>();
         nodeManager = FindObjectOfType<NodeManager>();
-        cityManagementUI = FindObjectOfType<CityManagementUI>(true);
-
+        uiHandler = FindObjectOfType<UIHandler>();
     }
 
     private void Update()
@@ -90,6 +92,7 @@ public class InputHandler : MonoBehaviour
         activePlayerFaction = playerFaction;
         activePlayerFaction.SetActiveFaction(true);
         cameraMover.SetCameraTarget(playerFaction.GetCapitol().transform.position);
+        uiHandler.UpdateTopBar(playerFaction);
     }
 
     public void PlayerEndedTurn()
@@ -115,23 +118,38 @@ public class InputHandler : MonoBehaviour
     {
         activeBuildingPrefab = buildingPrefabs[index];
 
-        mouseAction = BuildBuilding;
-        readingMouse = true;
-    }
-
-    private void BuildBuilding()
-    {
         if (tempBuilding == null)
         {
             tempBuilding = Instantiate(activeBuildingPrefab, new Vector3(1000, 0, 0), Quaternion.identity);
         }
 
+        else
+        {
+            Destroy(tempBuilding.gameObject);
+            Destroy(buildingPlacer.gameObject);
+            SetToBuildBuilding(index);
+            return;
+        }
+
+        if (activePlayerFaction.GetCapitol().GetTreasury().CheckCost(tempBuilding.GetConstructionCost()))
+        {
+            mouseAction = BuildBuilding;
+            readingMouse = true;
+        }
+
+        else
+        {
+            Destroy(tempBuilding.gameObject);
+        }
+    }
+
+    private void BuildBuilding()
+    {
         if (buildingPlacer == null)
         {
             buildingPlacer = Instantiate(buildingPlacerPrefab);
             buildingPlacer.SetSprite(tempBuilding.GetBlankSprite());
         }
-
         
         TileNode currentNode = FindMousePosition();
         bool validPlacement = ValidatePlacement(currentNode);
@@ -141,6 +159,11 @@ public class InputHandler : MonoBehaviour
         {
             if (validPlacement)
             {
+                foreach(Resource resource in tempBuilding.GetConstructionCost())
+                {
+                    activePlayerFaction.GetCapitol().GetTreasury().AdjustResources(-resource);
+                }
+                uiHandler.UpdateTopBar(activePlayerFaction);
                 BuildingUnderConstruction buildingUnderConstruction = Instantiate(buildingUnderConstructionPrefab, buildingPlacer.transform.position, Quaternion.identity);
                 buildingUnderConstruction.SetSprite(tempBuilding.GetBlankSprite());
                 buildingUnderConstruction.UpdateBuildingCountDown(tempBuilding.GetConstructionTime());
@@ -170,33 +193,18 @@ public class InputHandler : MonoBehaviour
     {
         if(faction.GetActiveFaction())
         {
-            cityManagementUI.gameObject.SetActive(true);
-            cityManagementUI.OpenCityMangement(faction.GetCapitol());
-            cameraMover.SetCameraTarget(faction.GetCapitol().transform.position);
-            cameraMover.SetCameraLock(true);
-            foreach (IBuilding building in faction.GetCapitol().GetBuildingList())
-            {
-                if (building is TileEconomicBuilding)
-                {
-                    TileEconomicBuilding economicBuilding = building as TileEconomicBuilding;
-                    economicBuilding.HandleWorkerManagement(true);
-                }
-            }
+            uiHandler.OpenCityManager(faction);
+            
         }
     }
 
     public void UpdateSettlementManagerUI()
     {
-        if (cityManagementUI.gameObject.activeSelf)
-        {
-            cityManagementUI.UpdateIdleWorkerCount();
-        }
+        uiHandler.UpdateSettlementManager();
     }
 
     public void CloseCityManagement()
     {
-        cameraMover.SetCameraLock(false);
-        activePlayerFaction.GetCapitol().CloseMenu();
-        cityManagementUI.gameObject.SetActive(false);
+        uiHandler.CloseCityManager(activePlayerFaction);
     }
 }

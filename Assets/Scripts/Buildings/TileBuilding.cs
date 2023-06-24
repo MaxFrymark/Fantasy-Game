@@ -14,7 +14,6 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
     TileNode homeTile;
     Region homeRegion;
 
-
     public int GetConstructionTime()
     {
         return constructionTime;
@@ -74,4 +73,13 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
 
         return nodeToPlace;
     }
+
+    public List<Resource> GetConstructionCost()
+    {
+        List<Resource> cost = new List<Resource>();
+        SetUpConstructionCost(cost);
+        return cost;
+    }
+
+    public abstract void SetUpConstructionCost(List<Resource> cost);
 }

@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
     [SerializeField] InputHandler inputHandler;
-    [SerializeField] TopBar topBar;
 
     int currentTurnNumber = 1;
     List<Command> commandQueue = new List<Command>();
@@ -15,11 +15,6 @@ public class TurnManager : MonoBehaviour
     public event EventHandler OnUpdateEconomy;
 
     Calendar calendar = new Calendar();
-
-    private void Start()
-    {
-        EndTurn();
-    }
 
     public void AddFaction(Faction faction)
     {
@@ -97,21 +92,17 @@ public class TurnManager : MonoBehaviour
                 UpdateActivePlayerFaction(firstPlayer);
             }
         }
-        
-
     }
 
     private void UpdateActivePlayerFaction(PlayerFaction faction)
     {
         inputHandler.SetActivePlayerFaction(faction);
-        topBar.UpdateActivePlayer(faction);
     }
 
     private void UpdateCaldendar()
     {
         currentTurnNumber++;
         calendar.Increment();
-        topBar.UpdateTurnCounter(calendar.GetYear(), calendar.GetMonth());
     }
 
     public Calendar GetCalendar()
@@ -122,9 +113,18 @@ public class TurnManager : MonoBehaviour
 
 public class Calendar
 {
+    public static Calendar Singleton;
+    
     public Calendar()
     {
-
+        if(Singleton == null)
+        {
+            Singleton = this;
+        }
+        else
+        {
+            Debug.Log("Multiple Calenders");
+        }
     }
 
     int year = 1;

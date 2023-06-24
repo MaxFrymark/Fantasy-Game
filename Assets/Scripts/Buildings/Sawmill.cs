@@ -20,4 +20,14 @@ public class Sawmill : TileEconomicBuilding
     {
         return 1;
     }
+
+    public override List<Resource> CalculateUpkeep()
+    {
+        return null;
+    }
+
+    public override void SetUpConstructionCost(List<Resource> cost)
+    {
+        cost.Add(new Resource(Resource.ResourceType.Metal, 50));
+    }
 }

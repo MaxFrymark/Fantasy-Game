@@ -425,10 +425,10 @@ public class NodeTerrainData
         switch (terrainType)
         {
             case TerrainType.plains:
-                fertility = 100;
+                fertility = 150;
                 break;
             case TerrainType.hills:
-                fertility = 50;
+                fertility = 75;
                 break;
         }
 

@@ -12,6 +12,7 @@ public class Farm : TileEconomicBuilding
     {
         base.ActivateBuilding();
         calendar = FindObjectOfType<TurnManager>().GetCalendar();
+        TakeAction();
     }
 
     public override void TakeAction()
@@ -21,9 +22,10 @@ public class Farm : TileEconomicBuilding
         {
             treasury.AdjustResources(resource);
         }
+        CalculateMaximumWorkers();
     }
 
-    public override Resource CalculateResourseToAdd()
+    private void CalculateMaximumWorkers()
     {
         int month = calendar.GetMonth();
         if (month == 1)
@@ -36,6 +38,7 @@ public class Farm : TileEconomicBuilding
             Plant();
             maxWorkers = 1;
             ReduceToMaximumWorkforce();
+
         }
 
         else if (month == 9)
@@ -46,10 +49,8 @@ public class Farm : TileEconomicBuilding
 
         else if (month == 10)
         {
-            Resource harvest = Harvest();
             maxWorkers = 0;
             ReduceToMaximumWorkforce();
-            return harvest;
         }
 
         else if (month > 2 && month < 9)
@@ -64,6 +65,20 @@ public class Farm : TileEconomicBuilding
                 maxWorkers = 0;
             }
         }
+    }
+
+    public override Resource CalculateResourseToAdd()
+    {
+        int month = calendar.GetMonth();
+
+        if (month == 10)
+        {
+            Resource harvest = Harvest();
+            
+            return harvest;
+        }
+
+        
 
         return new Resource(Resource.ResourceType.Food, 0);
     }
@@ -151,5 +166,16 @@ public class Farm : TileEconomicBuilding
         }
 
         return nodeToPlace;
+    }
+
+    public override List<Resource> CalculateUpkeep()
+    {
+        return null;
+    }
+
+    public override void SetUpConstructionCost(List<Resource> cost)
+    {
+        cost.Add(new Resource(Resource.ResourceType.Wood, 25));
+        cost.Add(new Resource(Resource.ResourceType.Metal, 25));
     }
 }

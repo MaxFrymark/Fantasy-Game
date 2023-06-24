@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public abstract class Settlement : TileBuilding
+public abstract class Settlement : TileBuilding, IEconomicObject
 {
     [SerializeField] TextMeshPro settlementNameField;
     List<Pop> settlementPopulation = new List<Pop>();
@@ -16,9 +16,10 @@ public abstract class Settlement : TileBuilding
 
     [SerializeField] Farm farm;
 
-    protected virtual void Start()
+    public override void ActivateBuilding()
     {
         treasury = new Treasury();
+        treasury.AddEconomicObject(this);
         for (int i = 0; i < startingPopulation; i++)
         {
             AddPop();
@@ -32,9 +33,17 @@ public abstract class Settlement : TileBuilding
         Farm newFarm = Instantiate(farm);
         newFarm.gameObject.SetActive(true);
         TileNode farmNode = newFarm.GetValidLocationForBuilding(GetHomeRegion());
-        newFarm.transform.position = farmNode.GetWorldPosition();
-        newFarm.ActivateBuilding();
-        farmNode.GetNodeTerrainData().RemoveForest();
+        if (farmNode != null)
+        {
+            newFarm.transform.position = farmNode.GetWorldPosition();
+            newFarm.ActivateBuilding();
+            farmNode.GetNodeTerrainData().RemoveForest();
+            newFarm.SetToMaximumWorkers();
+        }
+        else
+        {
+            Debug.Log("Region Lacks Valid Space for Farm");
+        }
     }
 
     public void SetName(string settlementName)
@@ -68,11 +77,6 @@ public abstract class Settlement : TileBuilding
         Pop pop = new Pop();
         pop.AssignToHome(this);
         settlementPopulation.Add(pop);
-    }
-
-    public override void ActivateBuilding()
-    {
-        
     }
 
     public Pop GetIdleWorker()
@@ -110,5 +114,25 @@ public abstract class Settlement : TileBuilding
     public virtual void UpdateSettlementManagerUI()
     {
 
+    }
+
+    public void TakeAction()
+    {
+        List<Resource> upkeep = CalculateUpkeep();
+        foreach(Resource resource in upkeep)
+        {
+            treasury.AdjustResources(resource);
+        }
+    }
+
+    public int GetPriority()
+    {
+        return 1;
+    }
+
+    public List<Resource> CalculateUpkeep()
+    {
+        List<Resource> upkeep = new List<Resource> { new Resource(Resource.ResourceType.Food, -startingPopulation) };
+        return upkeep;
     }
 }

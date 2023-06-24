@@ -37,6 +37,21 @@ public abstract class TileEconomicBuilding : TileBuilding, IEconomicBuilding
         }
     }
 
+    public void SetToMaximumWorkers()
+    {
+        if(workers.Count < maxWorkers)
+        {
+            Pop worker = attachedSettlement.GetIdleWorker();
+            if(worker != null)
+            {
+                workers.Add(worker);
+                worker.AssignToJob(this);
+                UpdateWorkerCount();
+                SetToMaximumWorkers();
+            }
+        }
+    }
+
     private void UpdateWorkerCount()
     {
         workerCounter.text = workers.Count + "/" + maxWorkers;
@@ -65,10 +80,11 @@ public abstract class TileEconomicBuilding : TileBuilding, IEconomicBuilding
         }
     }
 
-    
 
     public abstract int GetPriority();
 
     public abstract void TakeAction();
+
+    public abstract List<Resource> CalculateUpkeep();
     public abstract Resource CalculateResourseToAdd();
 }

@@ -17,6 +17,7 @@ public class MapConfig : MonoBehaviour
         stages.Add(new GenerateRegions(mapWidth, mapHeight));
 
         FindObjectOfType<MapCreator>().SetMapGenerationStages(stages);
+        FindObjectOfType<TurnManager>().EndTurn();
     }
 
 }

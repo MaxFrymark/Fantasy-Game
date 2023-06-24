@@ -8,13 +8,16 @@ public class City : Settlement
     Faction owner;
     InputHandler inputHandler;
 
-    protected override void Start()
+    public override void ActivateBuilding()
     {
-        base.Start();
-        if(owner is PlayerFaction)
+        if (owner is PlayerFaction)
         {
-            inputHandler = gameObject.AddComponent<InputHandler>();
+            inputHandler = FindObjectOfType<InputHandler>();
         }
+        base.ActivateBuilding();
+        GetTreasury().AdjustResources(new Resource(Resource.ResourceType.Food, 200));
+        GetTreasury().AdjustResources(new Resource(Resource.ResourceType.Wood, 50));
+        GetTreasury().AdjustResources(new Resource(Resource.ResourceType.Metal, 50));
     }
 
     public void SetCityOwner(Faction faction)
@@ -49,5 +52,10 @@ public class City : Settlement
         {
             inputHandler.UpdateSettlementManagerUI();
         }
+    }
+
+    public override void SetUpConstructionCost(List<Resource> cost)
+    {
+        return;
     }
 }

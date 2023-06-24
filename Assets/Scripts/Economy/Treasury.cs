@@ -19,6 +19,11 @@ public class Treasury
         resources.Add(new Resource (Resource.ResourceType.Wood, 0));
     }
 
+    public List<IEconomicObject> GetEconomicObjects()
+    {
+        return economicObjects;
+    }
+
     public void AdjustResources(Resource resource)
     {
         bool resourceAdded = false;
@@ -35,6 +40,11 @@ public class Treasury
         {
             AddResource(resource);
         }
+    }
+
+    public List<Resource> GetResources()
+    {
+        return resources;
     }
 
     public Resource GetResource(Resource.ResourceType resourceType)
@@ -67,6 +77,37 @@ public class Treasury
     public void AddEconomicObject(IEconomicObject economicObject)
     {
         economicObjects.Add(economicObject);
-        economicObjects.Sort();
+        //economicObjects.Sort();
+    }
+
+    public bool CheckCost(List<Resource> cost)
+    {
+        if(cost.Count == 0)
+        {
+            return true;
+        }
+        
+        foreach(Resource resourceToSpend in cost)
+        {
+            Resource resource = Resource.none;
+            foreach(Resource resourceHas in resources)
+            {
+                if(resourceHas.GetResourceType == resourceToSpend.GetResourceType)
+                {
+                    resource = resourceHas;
+                }
+            }
+            if(resource.GetResourceType == Resource.ResourceType.None)
+            {
+                return false;
+            }
+            
+            if(resource.Quantity < resourceToSpend.Quantity)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
