@@ -89,23 +89,51 @@ public class Treasury
         
         foreach(Resource resourceToSpend in cost)
         {
-            Resource resource = Resource.none;
-            foreach(Resource resourceHas in resources)
-            {
-                if(resourceHas.GetResourceType == resourceToSpend.GetResourceType)
-                {
-                    resource = resourceHas;
-                }
-            }
-            if(resource.GetResourceType == Resource.ResourceType.None)
+            if (!CheckIfResourceAvailable(resourceToSpend))
             {
                 return false;
             }
-            
-            if(resource.Quantity < resourceToSpend.Quantity)
+        }
+
+        return true;
+    }
+
+    public bool PayUpkeep(List<Resource> upkeep)
+    {
+        foreach(Resource upkeepResource in upkeep)
+        {
+            if (!CheckIfResourceAvailable(upkeepResource))
             {
                 return false;
             }
+        }
+
+        foreach (Resource upkeepResource in upkeep)
+        {
+            AdjustResources(upkeepResource);
+        }
+
+        return true;
+    }
+
+    private bool CheckIfResourceAvailable(Resource resourceToSpend)
+    {
+        Resource resource = Resource.none;
+        foreach (Resource resourceHas in resources)
+        {
+            if (resourceHas.GetResourceType == resourceToSpend.GetResourceType)
+            {
+                resource = resourceHas;
+            }
+        }
+        if (resource.GetResourceType == Resource.ResourceType.None)
+        {
+            return false;
+        }
+
+        if (resource.Quantity < Mathf.Abs(resourceToSpend.Quantity))
+        {
+            return false;
         }
 
         return true;

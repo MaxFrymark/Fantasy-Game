@@ -14,8 +14,6 @@ public class TurnManager : MonoBehaviour
 
     public event EventHandler OnUpdateEconomy;
 
-    Calendar calendar = new Calendar();
-
     public void AddFaction(Faction faction)
     {
         factions.Add(faction);
@@ -102,28 +100,28 @@ public class TurnManager : MonoBehaviour
     private void UpdateCaldendar()
     {
         currentTurnNumber++;
-        calendar.Increment();
-    }
-
-    public Calendar GetCalendar()
-    {
-        return calendar;
+        Calendar.Singleton.Increment();
     }
 }
 
 public class Calendar
 {
-    public static Calendar Singleton;
+    public static Calendar singleton;
     
     public Calendar()
     {
-        if(Singleton == null)
+        
+    }
+
+    public static Calendar Singleton
+    {
+        get
         {
-            Singleton = this;
-        }
-        else
-        {
-            Debug.Log("Multiple Calenders");
+            if(singleton == null)
+            {
+                singleton = new Calendar();
+            }
+            return singleton;
         }
     }
 

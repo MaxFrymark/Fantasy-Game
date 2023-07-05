@@ -17,7 +17,7 @@ public interface IIncomeSource : IEconomicObject
     public Resource CalculateResourseToAdd();
 }
 
-public interface IEconomicBuilding : IIncomeSource
+public interface IEconomicBuilding : IIncomeSource, IBuilding
 {
     public void AddWorker();
     public void RemoveWorker();

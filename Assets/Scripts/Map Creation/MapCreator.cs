@@ -21,7 +21,7 @@ public class MapCreator : MonoBehaviour
     {
         foreach(MapGenerationStage stage in stages)
         {
-            Debug.Log(stage.GetDescription());
+            //Debug.Log(stage.GetDescription());
             stage.GenerateMap();
         }
 

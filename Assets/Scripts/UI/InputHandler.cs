@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class InputHandler : MonoBehaviour
 {
-    [SerializeField] string inputName;
-    
     PlayerFaction activePlayerFaction;
     NodeManager nodeManager;
 

@@ -21,4 +21,10 @@ public class Pop
     {
         this.job = job;
     }
+
+    public void KillPop()
+    {
+        home = null;
+        job = null;
+    }
 }

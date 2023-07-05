@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public abstract class TileBuilding : MonoBehaviour, IBuilding
 {
@@ -13,6 +14,8 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
 
     TileNode homeTile;
     Region homeRegion;
+
+    public abstract string GetObjectTag();
 
     public int GetConstructionTime()
     {
@@ -82,4 +85,5 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
     }
 
     public abstract void SetUpConstructionCost(List<Resource> cost);
+    public abstract bool IsBuildingAvailable();
 }

@@ -8,9 +8,13 @@ public class Forge : CityBuilding
     {
         
     }
-    
-    
-    protected override void SetUpConstructionCost(List<Resource> constructionCost)
+
+    public override string GetObjectTag()
+    {
+        return "Forge";
+    }
+
+    public override void SetUpConstructionCost(List<Resource> constructionCost)
     {
         constructionCost.Add(new Resource(Resource.ResourceType.Wood, 25));
     }
@@ -38,6 +42,11 @@ public class Forge : CityBuilding
     {
         treasury.AdjustResources(CalculateResourseToAdd());
         treasury.AdjustResources(CalculateUpkeep()[0]);
+    }
+
+    public override bool IsBuildingAvailable()
+    {
+        return true;
     }
 
 }

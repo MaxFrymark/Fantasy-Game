@@ -12,12 +12,19 @@ public abstract class Settlement : TileBuilding, IEconomicObject
     string settlementName;
     Treasury treasury;
 
+    int growthTarget;
+    int currentGrowth = 0;
+    int growthPerTurn = 20;
+
     protected List<IBuilding> buildings = new List<IBuilding>();
+
+    bool settlementStarving = false;
 
     [SerializeField] Farm farm;
 
     public override void ActivateBuilding()
     {
+        growthTarget = CalculateGrowthTarget();
         treasury = new Treasury();
         treasury.AddEconomicObject(this);
         for (int i = 0; i < startingPopulation; i++)
@@ -30,18 +37,22 @@ public abstract class Settlement : TileBuilding, IEconomicObject
 
     protected virtual void BuildStartingBuildings()
     {
-        Farm newFarm = Instantiate(farm);
+        ObjectPool objectPool = FindObjectOfType<ObjectPool>();
+
+        Farm newFarm = objectPool.GetTileBuildingFromPool("Farm") as Farm;
         newFarm.gameObject.SetActive(true);
         TileNode farmNode = newFarm.GetValidLocationForBuilding(GetHomeRegion());
         if (farmNode != null)
         {
             newFarm.transform.position = farmNode.GetWorldPosition();
+            newFarm.transform.parent = transform;
             newFarm.ActivateBuilding();
             farmNode.GetNodeTerrainData().RemoveForest();
             newFarm.SetToMaximumWorkers();
         }
         else
         {
+            newFarm.gameObject.SetActive(false);
             Debug.Log("Region Lacks Valid Space for Farm");
         }
     }
@@ -69,7 +80,32 @@ public abstract class Settlement : TileBuilding, IEconomicObject
 
     public void HandlePopulationGrowth()
     {
+        if (settlementStarving)
+        {
+            currentGrowth -= 10;
+            if (currentGrowth < 0)
+            {
+                settlementPopulation[0].KillPop();
+                settlementPopulation.RemoveAt(0);
+                growthTarget = CalculateGrowthTarget();
+                currentGrowth = growthTarget / 2;
+            }
+        }
+        else
+        {
+            currentGrowth += growthPerTurn;
+            if (currentGrowth >= growthTarget)
+            {
+                GrowPopulation();
+            }
+        }
+    }
 
+    private void GrowPopulation()
+    {
+        AddPop();
+        currentGrowth -= growthTarget;
+        growthTarget = CalculateGrowthTarget();
     }
 
     private void AddPop()
@@ -118,11 +154,9 @@ public abstract class Settlement : TileBuilding, IEconomicObject
 
     public void TakeAction()
     {
-        List<Resource> upkeep = CalculateUpkeep();
-        foreach(Resource resource in upkeep)
-        {
-            treasury.AdjustResources(resource);
-        }
+        settlementStarving = !treasury.PayUpkeep(CalculateUpkeep());
+        HandlePopulationGrowth();
+        
     }
 
     public int GetPriority()
@@ -132,7 +166,37 @@ public abstract class Settlement : TileBuilding, IEconomicObject
 
     public List<Resource> CalculateUpkeep()
     {
-        List<Resource> upkeep = new List<Resource> { new Resource(Resource.ResourceType.Food, -startingPopulation) };
+        List<Resource> upkeep = new List<Resource> { new Resource(Resource.ResourceType.Food, -settlementPopulation.Count) };
         return upkeep;
+    }
+
+    private int CalculateGrowthTarget()
+    {
+        return 100;
+    }
+
+    public int GetGrowthPerTurn()
+    {
+        if (settlementStarving)
+        {
+            return -10;
+        }
+
+        return growthPerTurn;
+    }
+
+    public int GetCurrentGrowth()
+    {
+        return currentGrowth;
+    }
+
+    public int GetGrowthTarget()
+    {
+        return growthTarget;
+    }
+
+    public override bool IsBuildingAvailable()
+    {
+        return false;
     }
 }

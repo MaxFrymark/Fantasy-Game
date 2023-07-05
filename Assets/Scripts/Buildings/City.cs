@@ -8,6 +8,11 @@ public class City : Settlement
     Faction owner;
     InputHandler inputHandler;
 
+    public override string GetObjectTag()
+    {
+        return "City";
+    }
+
     public override void ActivateBuilding()
     {
         if (owner is PlayerFaction)

@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class TopBar : MonoBehaviour
 {
+    [SerializeField] ResourceSpriteHolder spriteHolder;
+    
     [SerializeField] TextMeshProUGUI yearCounter;
     [SerializeField] TextMeshProUGUI monthCounter;
 
@@ -59,7 +61,7 @@ public class TopBar : MonoBehaviour
         }
 
         ResourceCounter newResourceCounter = Instantiate(ressourceCounterPrefab, resourceCounterPoints[curentCounterPoint].position, Quaternion.identity, transform);
-        newResourceCounter.SetUpCounter(null, resource);
+        newResourceCounter.SetUpCounter(spriteHolder.GetResourceSprite(resource), resource);
         resourceCounterList.Add(newResourceCounter);
         curentCounterPoint++;
         return newResourceCounter;

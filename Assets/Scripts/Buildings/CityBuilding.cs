@@ -14,6 +14,7 @@ public abstract class CityBuilding : IEconomicBuilding
 
     protected Treasury treasury;
 
+    public abstract string GetObjectTag();
 
     public CityBuilding(Faction owner, Region homeRegion)
     {
@@ -22,7 +23,7 @@ public abstract class CityBuilding : IEconomicBuilding
         AssignToSettlement(homeRegion.GetSettlement());
     }
 
-    private void AssignHomeRegion(Region home)
+    public void AssignHomeRegion(Region home)
     {
         this.home = home;
     }
@@ -41,14 +42,14 @@ public abstract class CityBuilding : IEconomicBuilding
 
     }
 
-    List<Resource> GetConstructionCost()
+    public List<Resource> GetConstructionCost()
     {
         List<Resource> cost = new List<Resource>();
         SetUpConstructionCost(cost);
         return cost;
     }
 
-    protected abstract void SetUpConstructionCost(List<Resource> constructionCost);
+    public abstract void SetUpConstructionCost(List<Resource> constructionCost);
 
     public abstract void TakeAction();
     
@@ -101,6 +102,8 @@ public abstract class CityBuilding : IEconomicBuilding
     public void AssignToSettlement(Settlement settlement)
     {
         attachedCity = settlement as City;
-    } 
+    }
+
+    public abstract bool IsBuildingAvailable();
 }
 

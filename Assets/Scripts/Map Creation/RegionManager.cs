@@ -11,12 +11,14 @@ public class RegionManager : MonoBehaviour
     [SerializeField] City city;
     [SerializeField] Village village;
 
+    ObjectPool objectPool;
+
     private List<Region> regions = new List<Region>();
 
     int minimumRegionSize = 12;
     int maximumRegionSize = 16;
 
-    int numberOfPlayerFactions = 2;
+    int numberOfPlayerFactions = 1;
     int numberOfCities = 6;
 
     public void CreateRegion(TileNode startingNode)
@@ -293,22 +295,26 @@ public class RegionManager : MonoBehaviour
 
     public void PlaceSettlements()
     {
+        objectPool = FindObjectOfType<ObjectPool>();
+
         PlaceCities();
 
         foreach(Region region in regions)
         {
             if (region.GetSettlement() == null)
             {
-                Village newVillage = Instantiate(village);
+                Village newVillage = objectPool.GetTileBuildingFromPool("Village") as Village;
                 TileNode node = region.SetSettlement(newVillage);
                 if (node == null)
                 {
-                    Destroy(newVillage.gameObject);
+                    newVillage.gameObject.SetActive(false);
                 }
 
                 else
                 {
+                    newVillage.gameObject.SetActive(true);
                     newVillage.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(node);
+                    newVillage.transform.parent = transform;
                     newVillage.SetName(CityNameGenerator.Instance.GetRandomCityName());
                     newVillage.ActivateBuilding();
                 }
@@ -449,8 +455,11 @@ public class RegionManager : MonoBehaviour
 
     private void PlaceCity(Region region, FactionCreator factionCreator)
     {
-        City newCity = Instantiate(city);
+        City newCity = objectPool.GetTileBuildingFromPool("City") as City;
+        newCity.gameObject.SetActive(true);
+
         newCity.transform.position = NodeManager.Instance.GetWorldPostitionFromTileNode(region.SetSettlement(newCity));
+        newCity.transform.parent = transform;
         newCity.SetName(CityNameGenerator.Instance.GetRandomCityName());
         Faction faction;
         if(numberOfPlayerFactions > 0)

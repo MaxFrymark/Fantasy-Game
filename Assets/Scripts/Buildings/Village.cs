@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Village : Settlement
 {
+    public override string GetObjectTag()
+    {
+        return "Village";
+    }
+
     public override void ActivateBuilding()
     {
         base.ActivateBuilding();
@@ -14,4 +19,6 @@ public class Village : Settlement
     {
         return;
     }
+
+
 }

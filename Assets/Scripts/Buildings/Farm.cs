@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class Farm : TileEconomicBuilding
 {
-    Calendar calendar;
     int possibleHarvest = 0;
     int maxHarvestWorkers;
+
+    public override string GetObjectTag()
+    {
+        return "Farm";
+    }
 
     public override void ActivateBuilding()
     {
         base.ActivateBuilding();
-        calendar = FindObjectOfType<TurnManager>().GetCalendar();
         TakeAction();
     }
 
@@ -27,7 +30,7 @@ public class Farm : TileEconomicBuilding
 
     private void CalculateMaximumWorkers()
     {
-        int month = calendar.GetMonth();
+        int month = Calendar.Singleton.GetMonth();
         if (month == 1)
         {
             maxWorkers = 5;
@@ -69,7 +72,7 @@ public class Farm : TileEconomicBuilding
 
     public override Resource CalculateResourseToAdd()
     {
-        int month = calendar.GetMonth();
+        int month = Calendar.Singleton.GetMonth();
 
         if (month == 10)
         {
@@ -177,5 +180,10 @@ public class Farm : TileEconomicBuilding
     {
         cost.Add(new Resource(Resource.ResourceType.Wood, 25));
         cost.Add(new Resource(Resource.ResourceType.Metal, 25));
+    }
+
+    public override bool IsBuildingAvailable()
+    {
+        return true;
     }
 }
