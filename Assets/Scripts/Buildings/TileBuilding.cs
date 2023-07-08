@@ -10,12 +10,13 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
     [SerializeField] List<TileNode.TerrainType> validTerrain;
     [SerializeField] List<int> validForest;
 
+    [SerializeField] Sprite buildingSprite;
     [SerializeField] Sprite blankSprite;
 
     TileNode homeTile;
     Region homeRegion;
+    [SerializeField] string buildingName;
 
-    public abstract string GetObjectTag();
 
     public int GetConstructionTime()
     {
@@ -85,5 +86,14 @@ public abstract class TileBuilding : MonoBehaviour, IBuilding
     }
 
     public abstract void SetUpConstructionCost(List<Resource> cost);
-    public abstract bool IsBuildingAvailable();
+    public abstract bool IsBuildingAvailable(Faction faction);
+    public string GetBuildingName()
+    {
+        return buildingName;
+    }
+
+    public Sprite GetBuildingSprite()
+    {
+        return buildingSprite;
+    }
 }

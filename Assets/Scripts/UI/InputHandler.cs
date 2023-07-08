@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class InputHandler : MonoBehaviour
 {
+    [SerializeField] ObjectPool objectPool;
+    
     PlayerFaction activePlayerFaction;
     NodeManager nodeManager;
 
@@ -14,7 +16,6 @@ public class InputHandler : MonoBehaviour
     private delegate void MouseAction();
     private MouseAction mouseAction;
 
-    [SerializeField] List<TileBuilding> buildingPrefabs;
     TileBuilding activeBuildingPrefab;
 
     [SerializeField] BuildingUnderConstruction buildingUnderConstructionPrefab;
@@ -81,6 +82,11 @@ public class InputHandler : MonoBehaviour
         }
     }
 
+    public PlayerFaction GetActivePlayer()
+    {
+        return activePlayerFaction;
+    }
+
     public void SetActivePlayerFaction(PlayerFaction playerFaction)
     {
         if(activePlayerFaction != null)
@@ -112,32 +118,38 @@ public class InputHandler : MonoBehaviour
         toolTipCoroutinerunning = false;
     }
 
-    public void SetToBuildBuilding(int index)
+    public void SetToBuildBuilding(IBuilding building)
     {
-        activeBuildingPrefab = buildingPrefabs[index];
-
-        if (tempBuilding == null)
+        if (building is TileBuilding)
         {
-            tempBuilding = Instantiate(activeBuildingPrefab, new Vector3(1000, 0, 0), Quaternion.identity);
-        }
+            Debug.Log("hi");
 
-        else
-        {
-            Destroy(tempBuilding.gameObject);
-            Destroy(buildingPlacer.gameObject);
-            SetToBuildBuilding(index);
-            return;
-        }
+            activeBuildingPrefab = objectPool.GetTileBuildingFromPool(building.GetBuildingName());
+            if(activeBuildingPrefab != null)
+            {
+                Debug.Log("meow");
+            }
 
-        if (activePlayerFaction.GetCapitol().GetTreasury().CheckCost(tempBuilding.GetConstructionCost()))
-        {
+            else
+            {
+                Debug.Log("null");
+            }
+
+            if (tempBuilding == null)
+            {
+                tempBuilding = Instantiate(activeBuildingPrefab, new Vector3(1000, 0, 0), Quaternion.identity);
+            }
+
+            else
+            {
+                Destroy(tempBuilding.gameObject);
+                Destroy(buildingPlacer.gameObject);
+                SetToBuildBuilding(building);
+                return;
+            }
+
             mouseAction = BuildBuilding;
             readingMouse = true;
-        }
-
-        else
-        {
-            Destroy(tempBuilding.gameObject);
         }
     }
 

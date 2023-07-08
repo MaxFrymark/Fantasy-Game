@@ -52,6 +52,7 @@ MonoBehaviour:
   validTerrain: 
   validForest: 
   blankSprite: {fileID: 0}
+  buildingName: City
   settlementNameField: {fileID: 8658604782836633625}
   startingPopulation: 10
   farm: {fileID: 7156048356892160163, guid: edc4d16e42f85a34a884a47cb660ac49, type: 3}

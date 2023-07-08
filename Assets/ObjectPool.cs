@@ -5,8 +5,10 @@ using UnityEngine;
 public class ObjectPool : MonoBehaviour
 {
     [SerializeField] TileBuilding[] tileBuildingPrefabs;
-    
     List<TileBuilding> tileBuildingPool = new List<TileBuilding>();
+
+    [SerializeField] ConstructionButton constructionButtonPrefab;
+    List<ConstructionButton> constructionButtons = new List<ConstructionButton>();
 
     private void InitialPoolSetUp()
     {
@@ -14,6 +16,11 @@ public class ObjectPool : MonoBehaviour
         {
             InstantiateTileBuildingPrefab(tileBuilding);
         }
+    }
+
+    public TileBuilding[] GetTileBuildingPrefabs()
+    {
+        return tileBuildingPrefabs;
     }
 
     public TileBuilding GetTileBuildingFromPool(string buildingTag)
@@ -26,7 +33,7 @@ public class ObjectPool : MonoBehaviour
         TileBuilding tileBuilding = null;
         foreach(TileBuilding building in tileBuildingPool)
         {
-            if(building.GetObjectTag() == buildingTag && !building.gameObject.activeInHierarchy) 
+            if(building.GetBuildingName() == buildingTag && !building.gameObject.activeInHierarchy) 
             {
                 tileBuilding = building;
             }
@@ -45,7 +52,7 @@ public class ObjectPool : MonoBehaviour
         TileBuilding newTilebuilding = null;
         foreach(TileBuilding building in tileBuildingPrefabs)
         {
-            if(buildingTag == building.GetObjectTag())
+            if(buildingTag == building.GetBuildingName())
             {
                 newTilebuilding = InstantiateTileBuildingPrefab(building);
                 break;
@@ -61,5 +68,28 @@ public class ObjectPool : MonoBehaviour
         newTileBuilding.gameObject.SetActive(false);
         tileBuildingPool.Add(newTileBuilding);
         return newTileBuilding;
+    }
+
+    public ConstructionButton GetConstructionButtonFromPool()
+    {
+        ConstructionButton newConstructionButton = null;
+        if (constructionButtons.Count > 0)
+        {
+            foreach (ConstructionButton button in constructionButtons)
+            {
+                if (!button.gameObject.activeInHierarchy)
+                {
+                    newConstructionButton = button;
+                    break;
+                }
+            }
+        }
+
+        if(newConstructionButton == null)
+        {
+            newConstructionButton = Instantiate(constructionButtonPrefab);
+        }
+        newConstructionButton.gameObject.SetActive(false);
+        return newConstructionButton;
     }
 }

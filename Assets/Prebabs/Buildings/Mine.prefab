@@ -133,7 +133,9 @@ MonoBehaviour:
   constructionTime: 5
   validTerrain: 03000000
   validForest: 00000000
+  buildingSprite: {fileID: 21300000, guid: c18d0939c3179cc499adcfe7cbac2e18, type: 3}
   blankSprite: {fileID: 21300000, guid: 299cb637fb229764b9dc22dfd9637e05, type: 3}
+  buildingName: Mine
   maxWorkers: 5
   workerCounter: {fileID: 6761547350435055001}
   workerManagement: {fileID: 6518411434499871123}

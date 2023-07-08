@@ -4,8 +4,6 @@ using UnityEngine;
 
 public interface IBuilding
 {
-    string GetObjectTag();
-    
     void AssignHomeRegion(Region home);
     Region GetHomeRegion();
 
@@ -17,5 +15,9 @@ public interface IBuilding
 
     void SetUpConstructionCost(List<Resource> constructionCost);
 
-    bool IsBuildingAvailable();
+    bool IsBuildingAvailable(Faction faction);
+
+    string GetBuildingName();
+
+    Sprite GetBuildingSprite();
 }

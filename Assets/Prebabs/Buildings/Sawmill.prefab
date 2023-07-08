@@ -133,7 +133,9 @@ MonoBehaviour:
   constructionTime: 2
   validTerrain: 0300000001000000
   validForest: 0100000002000000
+  buildingSprite: {fileID: 21300000, guid: 72a28b87a26e0ed479e81bd1d6da8c0d, type: 3}
   blankSprite: {fileID: 21300000, guid: e241f30572301404fbe43cf1efb18914, type: 3}
+  buildingName: Sawmill
   maxWorkers: 5
   workerCounter: {fileID: 7771708248984466269}
   workerManagement: {fileID: 7816415713722034007}

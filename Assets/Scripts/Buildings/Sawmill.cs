@@ -5,10 +5,7 @@ using UnityEngine;
 
 public class Sawmill : TileEconomicBuilding
 {
-    public override string GetObjectTag()
-    {
-        return "Sawmill";
-    }
+
     public override void TakeAction()
     {
         treasury.AdjustResources(CalculateResourseToAdd());
@@ -34,7 +31,7 @@ public class Sawmill : TileEconomicBuilding
         cost.Add(new Resource(Resource.ResourceType.Metal, 50));
     }
 
-    public override bool IsBuildingAvailable()
+    public override bool IsBuildingAvailable(Faction faction)
     {
         return true;
     }

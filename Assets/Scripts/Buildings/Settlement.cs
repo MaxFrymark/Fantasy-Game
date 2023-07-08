@@ -195,7 +195,7 @@ public abstract class Settlement : TileBuilding, IEconomicObject
         return growthTarget;
     }
 
-    public override bool IsBuildingAvailable()
+    public override bool IsBuildingAvailable(Faction faction)
     {
         return false;
     }

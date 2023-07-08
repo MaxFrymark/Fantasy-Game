@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class Mine : TileEconomicBuilding
 {
-    public override string GetObjectTag()
-    {
-        return "Mine";
-    }
 
     public override void TakeAction()
     {
@@ -34,7 +30,7 @@ public class Mine : TileEconomicBuilding
         cost.Add(new Resource(Resource.ResourceType.Wood, 50));
     }
 
-    public override bool IsBuildingAvailable()
+    public override bool IsBuildingAvailable(Faction faction)
     {
         return true;
     }

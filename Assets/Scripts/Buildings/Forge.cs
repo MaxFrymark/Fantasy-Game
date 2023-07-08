@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class Forge : CityBuilding
 {
+    
     public Forge(Faction owner, Region homeRegion) : base(owner, homeRegion)
     {
-        
+        buildingName = "Forge";
     }
 
-    public override string GetObjectTag()
-    {
-        return "Forge";
-    }
+    
 
     public override void SetUpConstructionCost(List<Resource> constructionCost)
     {
@@ -44,7 +42,7 @@ public class Forge : CityBuilding
         treasury.AdjustResources(CalculateUpkeep()[0]);
     }
 
-    public override bool IsBuildingAvailable()
+    public override bool IsBuildingAvailable(Faction faction)
     {
         return true;
     }

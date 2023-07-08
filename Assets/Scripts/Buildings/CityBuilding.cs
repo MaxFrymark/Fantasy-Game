@@ -11,10 +11,10 @@ public abstract class CityBuilding : IEconomicBuilding
     protected int priority;
     protected List<Pop> workers;
     protected int maxWorkers;
+    protected string buildingName;
 
     protected Treasury treasury;
-
-    public abstract string GetObjectTag();
+    Sprite buildingSprite;
 
     public CityBuilding(Faction owner, Region homeRegion)
     {
@@ -104,6 +104,16 @@ public abstract class CityBuilding : IEconomicBuilding
         attachedCity = settlement as City;
     }
 
-    public abstract bool IsBuildingAvailable();
+    public abstract bool IsBuildingAvailable(Faction faction);
+
+    public string GetBuildingName()
+    {
+        return buildingName;
+    }
+
+    public Sprite GetBuildingSprite()
+    {
+        return buildingSprite;
+    }
 }
 

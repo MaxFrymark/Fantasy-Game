@@ -7,10 +7,6 @@ public class Farm : TileEconomicBuilding
     int possibleHarvest = 0;
     int maxHarvestWorkers;
 
-    public override string GetObjectTag()
-    {
-        return "Farm";
-    }
 
     public override void ActivateBuilding()
     {
@@ -182,8 +178,9 @@ public class Farm : TileEconomicBuilding
         cost.Add(new Resource(Resource.ResourceType.Metal, 25));
     }
 
-    public override bool IsBuildingAvailable()
+    public override bool IsBuildingAvailable(Faction faction)
     {
         return true;
     }
+    
 }

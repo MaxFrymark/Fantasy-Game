@@ -119,7 +119,6 @@ public class TopBar : MonoBehaviour
             }
         }
     }
-    
 
     private void UpdateProjection(TextMeshProUGUI display, Resource resource)
     {

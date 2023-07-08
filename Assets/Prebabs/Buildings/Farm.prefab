@@ -133,7 +133,9 @@ MonoBehaviour:
   constructionTime: 3
   validTerrain: 0100000003000000
   validForest: 00000000
+  buildingSprite: {fileID: 21300000, guid: 665900670cde4f64cbcfaba6f71ea060, type: 3}
   blankSprite: {fileID: 21300000, guid: 674486f53968a93459ae854b99011d86, type: 3}
+  buildingName: Farm
   maxWorkers: 0
   workerCounter: {fileID: 2509397861343693788}
   workerManagement: {fileID: 2697928698545037270}
